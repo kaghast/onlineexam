@@ -1,0 +1,1142 @@
+{
+  "courses": [
+    {
+      "id": "m935015e01psf34_1",
+      "course_name": "Veri Yapıları ve Algoritmalar",
+      "course_id": "BLG201",
+      "level": "Lisans",
+      "akts": 6,
+      "course_code": "BLG201",
+      "university": "İstanbul Teknik Üniversitesi",
+      "season": "2025-2026 Güz",
+      "location": "Bilişim Fakültesi D-204",
+      "week_program": "Pazartesi 09:30 - 12:30",
+      "scope": "Bağlı listeler, yığınlar, kuyruklar, ikili arama ağaçları, AVL ağaçları, graflar ve algoritma analizi.",
+      "evaluation": "Vize %40, Proje %20, Final %40"
+    },
+    {
+      "id": "m935015e01psf34_2",
+      "course_name": "Veritabanı Yönetim Sistemleri",
+      "course_id": "YBS305",
+      "level": "Lisans",
+      "akts": 5,
+      "course_code": "YBS305",
+      "university": "İstanbul Üniversitesi",
+      "season": "2025-2026 Güz",
+      "location": "İktisat Fakültesi Lab-3",
+      "week_program": "Çarşamba 13:30 - 16:30",
+      "scope": "İlişkisel cebir, SQL sorgulama, normalizasyon formları, ACID ilkeleri, indeksleme ve sorgu optimizasyonu.",
+      "evaluation": "Vize %40, Laboratuvar %20, Final %40"
+    },
+    {
+      "id": "m935015e01psf34_3",
+      "course_name": "Lineer Cebir ve Olasılık",
+      "course_id": "MAT102",
+      "level": "Lisans",
+      "akts": 5,
+      "course_code": "MAT102",
+      "university": "İstanbul Teknik Üniversitesi",
+      "season": "2025-2026 Güz",
+      "location": "Merkezi Derslik B-101",
+      "week_program": "Perşembe 10:00 - 13:00",
+      "scope": "Matris işlemleri, lineer denklem sistemleri, vektör uzayları, determinantlar, özdeğerler ve temel olasılık teorisi.",
+      "evaluation": "Vize %35, Ödevler %15, Final %50"
+    },
+    {
+      "id": "m935015e01psf34_4",
+      "course_name": "Modern Web Mimarileri ve Güvenliği",
+      "course_id": "WEB204",
+      "level": "Lisans",
+      "akts": 4,
+      "course_code": "WEB204",
+      "university": "Yıldız Teknik Üniversitesi",
+      "season": "2025-2026 Güz",
+      "location": "Elektronik Binası E-102",
+      "week_program": "Cuma 14:00 - 17:00",
+      "scope": "Client-server mimarisi, RESTful servisler, JWT, CORS, HTTPS şifreleme, XSS ve SQL Enjeksiyonu önleme.",
+      "evaluation": "Vize %50, Final %50"
+    }
+  ],
+  "students": [
+    {
+      "id": "muuofbvrmpm5e5b_1",
+      "name_surname": "Kemal Şahin",
+      "student_no": "20240101",
+      "phone": "+90 532 100 2030",
+      "email": "kemalsahin@gmail.com",
+      "university": "İstanbul Teknik Üniversitesi",
+      "department": "Bilgisayar Mühendisliği"
+    },
+    {
+      "id": "muuofbvrmpm5e5b_2",
+      "name_surname": "Zeynep Kaya",
+      "student_no": "20240102",
+      "phone": "+90 533 211 3040",
+      "email": "zeynep.kaya@ogr.itu.edu.tr",
+      "university": "İstanbul Teknik Üniversitesi",
+      "department": "Bilgisayar Mühendisliği"
+    },
+    {
+      "id": "muuofbvrmpm5e5b_3",
+      "name_surname": "Can Demir",
+      "student_no": "20240103",
+      "phone": "+90 535 322 4050",
+      "email": "can.demir@ogr.istanbul.edu.tr",
+      "university": "İstanbul Üniversitesi",
+      "department": "Yönetim Bilişim Sistemleri"
+    },
+    {
+      "id": "muuofbvrmpm5e5b_4",
+      "name_surname": "Elif Yılmaz",
+      "student_no": "20240104",
+      "phone": "+90 542 433 5060",
+      "email": "elif.yilmaz@ogr.yildiz.edu.tr",
+      "university": "Yıldız Teknik Üniversitesi",
+      "department": "Yazılım Mühendisliği"
+    },
+    {
+      "id": "muuofbvrmpm5e5b_5",
+      "name_surname": "Mehmet Öztürk",
+      "student_no": "20240105",
+      "phone": "+90 555 544 6070",
+      "email": "mehmet.ozturk@ogr.itu.edu.tr",
+      "university": "İstanbul Teknik Üniversitesi",
+      "department": "Matematik Mühendisliği"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q_blg_1",
+      "course_id": "BLG201",
+      "topic": "Veri Yapıları & Ağaçlar",
+      "text": "Dengeli bir İkili Arama Ağacında (AVL Ağacı) n adet eleman içeren bir koleksiyonda arama işleminin en kötü durum (worst-case) zaman karmaşıklığı nedir?",
+      "options": [
+        {
+          "id": "A",
+          "text": "O(1)"
+        },
+        {
+          "id": "B",
+          "text": "O(log n)"
+        },
+        {
+          "id": "C",
+          "text": "O(n)"
+        },
+        {
+          "id": "D",
+          "text": "O(n log n)"
+        },
+        {
+          "id": "E",
+          "text": "O(n²)"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "AVL ağaçları yükseklik dengeli ağaçlardır. Yükseklik daima O(log n) mertebesinde tutulduğu için arama, ekleme ve silme işlemleri worst-case senaryoda O(log n) sürede gerçekleşir.",
+      "difficulty": "normal",
+      "stats": {
+        "times_asked": 12,
+        "times_correct": 8,
+        "times_wrong": 4,
+        "success_rate": 66.7
+      },
+      "created_at": "2025-10-01T00:00:00.000Z"
+    },
+    {
+      "id": "q_blg_2",
+      "course_id": "BLG201",
+      "topic": "Sıralama Algoritmaları",
+      "text": "Aşağıdaki sıralama algoritmalarından hangisi kararlı (stable) bir sıralama algoritmasıdır ve en kötü durumda O(n log n) karmaşıklık sunar?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Quick Sort"
+        },
+        {
+          "id": "B",
+          "text": "Heap Sort"
+        },
+        {
+          "id": "C",
+          "text": "Merge Sort"
+        },
+        {
+          "id": "D",
+          "text": "Selection Sort"
+        },
+        {
+          "id": "E",
+          "text": "Shell Sort"
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Merge Sort hem her zaman (en iyi, ortalama, en kötü) O(n log n) garantisi verir hem de eşit anahtarlı elemanların orijinal sırasını bozmayan kararlı (stable) bir algoritmadır.",
+      "difficulty": "kolay",
+      "stats": {
+        "times_asked": 14,
+        "times_correct": 11,
+        "times_wrong": 3,
+        "success_rate": 78.6
+      },
+      "created_at": "2025-10-02T00:00:00.000Z"
+    },
+    {
+      "id": "q_blg_3",
+      "course_id": "BLG201",
+      "topic": "Yığın & Kuyruk (Stack & Queue)",
+      "text": "Bir fonksiyonun kendi kendini çağırdığı özyinelemeli (recursive) durumlarda sistem çalışma ortamı çağrı adreslerini ve yerel değişkenleri saklamak için hangi veri yapısını kullanır?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Kuyruk (Queue)"
+        },
+        {
+          "id": "B",
+          "text": "Yığın (Call Stack)"
+        },
+        {
+          "id": "C",
+          "text": "Öncelikli Kuyruk (Priority Queue)"
+        },
+        {
+          "id": "D",
+          "text": "Graf (Graph)"
+        },
+        {
+          "id": "E",
+          "text": "İkili Arama Ağacı"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Özyinelemeli fonksiyon çağrılarında LIFO (Last In First Out) prensibine göre çalışan Call Stack (Çağrı Yığını) kullanılır.",
+      "difficulty": "kolay",
+      "stats": {
+        "times_asked": 15,
+        "times_correct": 13,
+        "times_wrong": 2,
+        "success_rate": 86.7
+      },
+      "created_at": "2025-10-03T00:00:00.000Z"
+    },
+    {
+      "id": "q_blg_4",
+      "course_id": "BLG201",
+      "topic": "Graf Algoritmaları",
+      "text": "Ağırlıklı bir grafta negatif kenar ağırlıkları bulunmadığında, tek bir başlangıç düğümünden diğer tüm düğümlere olan en kısa yolları bulan en verimli klasik algoritma hangisidir?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Dijkstra Algoritması"
+        },
+        {
+          "id": "B",
+          "text": "Bellman-Ford Algoritması"
+        },
+        {
+          "id": "C",
+          "text": "Floyd-Warshall Algoritması"
+        },
+        {
+          "id": "D",
+          "text": "Kruskal Algoritması"
+        },
+        {
+          "id": "E",
+          "text": "Prim Algoritması"
+        }
+      ],
+      "correct_answer": "A",
+      "explanation": "Negatif kenar olmayan grafta tek kaynaktan en kısa yol için Dijkstra algoritması min-heap ile O((V + E) log V) sürede çalışarak en yüksek verimi sunar.",
+      "difficulty": "normal",
+      "stats": {
+        "times_asked": 10,
+        "times_correct": 6,
+        "times_wrong": 4,
+        "success_rate": 60
+      },
+      "created_at": "2025-10-04T00:00:00.000Z"
+    },
+    {
+      "id": "q_blg_5",
+      "course_id": "BLG201",
+      "topic": "Karmaşıklık Teorisi",
+      "text": "Aşağıdaki yineleme bağıntısı (recurrence relation) Master Teoremi uygulandığında hangi asimptotik karmaşıklığı verir? T(n) = 2T(n/2) + O(n)",
+      "options": [
+        {
+          "id": "A",
+          "text": "O(n)"
+        },
+        {
+          "id": "B",
+          "text": "O(n log n)"
+        },
+        {
+          "id": "C",
+          "text": "O(n²)"
+        },
+        {
+          "id": "D",
+          "text": "O(log n)"
+        },
+        {
+          "id": "E",
+          "text": "O(2ⁿ)"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "a=2, b=2 ve f(n)=O(n). log_b(a) = log_2(2) = 1 olduğundan Master Teoremi Durum 2 gereği T(n) = O(n log n) sonucunu verir. (Merge sort örneği).",
+      "difficulty": "zor",
+      "stats": {
+        "times_asked": 11,
+        "times_correct": 4,
+        "times_wrong": 7,
+        "success_rate": 36.4
+      },
+      "created_at": "2025-10-05T00:00:00.000Z"
+    },
+    {
+      "id": "q_ybs_1",
+      "course_id": "YBS305",
+      "topic": "ACID Prensipleri",
+      "text": "Bir veritabanı işleminde (transaction) tüm işlemlerin ya tamamen başarıyla tamamlanmasını ya da hata anında hiç yapılmamış gibi geri alınmasını (rollback) garanti eden ACID ilkesi hangisidir?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Atomicity (Bütünlük/Bölünemezlik)"
+        },
+        {
+          "id": "B",
+          "text": "Consistency (Tutarlılık)"
+        },
+        {
+          "id": "C",
+          "text": "Isolation (İzolasyon)"
+        },
+        {
+          "id": "D",
+          "text": "Durability (Kalıcılık)"
+        },
+        {
+          "id": "E",
+          "text": "Scalability (Ölçeklenebilirlik)"
+        }
+      ],
+      "correct_answer": "A",
+      "explanation": "Atomicity, \"ya hep ya hiç\" ilkesidir. İşlemin bir parçası dahi aksarsa tüm adımlar iptal edilir.",
+      "difficulty": "kolay",
+      "stats": {
+        "times_asked": 13,
+        "times_correct": 11,
+        "times_wrong": 2,
+        "success_rate": 84.6
+      },
+      "created_at": "2025-10-06T00:00:00.000Z"
+    },
+    {
+      "id": "q_ybs_2",
+      "course_id": "YBS305",
+      "topic": "Normalizasyon Formları",
+      "text": "Bir ilişkisel tablonun İkinci Normal Formda (2NF) olabilmesi için 1NF şartının yanı sıra hangi ek koşulu sağlaması zorunludur?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Tüm sütunların tekil (unique) olması"
+        },
+        {
+          "id": "B",
+          "text": "Birincil anahtarın parçası olmayan tüm alanların tam fonksiyonel bağımlı olması (kısmi bağımlılık olmaması)"
+        },
+        {
+          "id": "C",
+          "text": "Geçişli (transitive) fonksiyonel bağımlılıkların bulunmaması"
+        },
+        {
+          "id": "D",
+          "text": "Çok değerli (multi-valued) bağımlılıkların ayrılması"
+        },
+        {
+          "id": "E",
+          "text": "Yabancı anahtar (foreign key) kısıtlamasının tanımlı olması"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "2NF için tablo 1NF olmalı ve bileşik birincil anahtara sahip tablolarda anahtarın yalnızca bir parçasına bağlı (kısmi bağımlı) hiçbir alan bulunmamalıdır.",
+      "difficulty": "normal",
+      "stats": {
+        "times_asked": 10,
+        "times_correct": 6,
+        "times_wrong": 4,
+        "success_rate": 60
+      },
+      "created_at": "2025-10-07T00:00:00.000Z"
+    },
+    {
+      "id": "q_ybs_3",
+      "course_id": "YBS305",
+      "topic": "İndeksleme & Performans",
+      "text": "Aşağıdakilerden hangisi bir tabloda B-Tree indeks kullanımının en belirgin avantajıdır?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Veri ekleme (INSERT) hızını katlayarak artırması"
+        },
+        {
+          "id": "B",
+          "text": "Diskte kaplanan toplam depolama alanını azaltması"
+        },
+        {
+          "id": "C",
+          "text": "Aralık (range) ve eşitlik arama sorgularında disk I/O maliyetini düşürerek O(log N) erişim sağlaması"
+        },
+        {
+          "id": "D",
+          "text": "Veritabanı yedekleme süresini sıfırlaması"
+        },
+        {
+          "id": "E",
+          "text": "Tüm foreign key kısıtlarını otomatik olarak kaldırması"
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "B-Tree indeksler veriyi sıralı tutarak aralık (BETWEEN, >, <) ve nokta sorgularında disk okuma sayısını logaritmik düzeye indirir.",
+      "difficulty": "normal",
+      "stats": {
+        "times_asked": 9,
+        "times_correct": 5,
+        "times_wrong": 4,
+        "success_rate": 55.6
+      },
+      "created_at": "2025-10-08T00:00:00.000Z"
+    },
+    {
+      "id": "q_ybs_4",
+      "course_id": "YBS305",
+      "topic": "SQL İleri Düzey",
+      "text": "SQL standardında HAVING yan tümcesi ile WHERE yan tümcesi arasındaki temel fark nedir?",
+      "options": [
+        {
+          "id": "A",
+          "text": "HAVING yalnızca metinsel alanlarda çalışır, WHERE sayısal alanlarda çalışır"
+        },
+        {
+          "id": "B",
+          "text": "WHERE gruplamadan önce tekil satırları filtrelerken, HAVING gruplanmış (GROUP BY) agregasyon sonuçlarını filtreler"
+        },
+        {
+          "id": "C",
+          "text": "HAVING indeks kullanır, WHERE indeks kullanamaz"
+        },
+        {
+          "id": "D",
+          "text": "HAVING yalnızca JOIN sorgularında geçerlidir"
+        },
+        {
+          "id": "E",
+          "text": "Hiçbir fark yoktur, ikisi birbirinin yerine kullanılabilir"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "WHERE satır bazlı filtreleme yapar ve COUNT/SUM gibi özet fonksiyonlarla doğrudan kullanılamaz; HAVING ise GROUP BY sonrasındaki grup özetlerine filtre uygular.",
+      "difficulty": "kolay",
+      "stats": {
+        "times_asked": 14,
+        "times_correct": 12,
+        "times_wrong": 2,
+        "success_rate": 85.7
+      },
+      "created_at": "2025-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "q_mat_1",
+      "course_id": "MAT102",
+      "topic": "Matrisler & Determinant",
+      "text": "A kare matrisinin determinantı det(A) = 0 ise, bu matris hakkında aşağıdakilerden hangisi kesinlikle doğrudur?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Matrisin tersi (inversi) mevcuttur"
+        },
+        {
+          "id": "B",
+          "text": "Matris tekildir (singular) ve tersi (inverse) yoktur"
+        },
+        {
+          "id": "C",
+          "text": "Tüm elemanları sıfırdır"
+        },
+        {
+          "id": "D",
+          "text": "Özdeğerlerinin toplamı pozitiftir"
+        },
+        {
+          "id": "E",
+          "text": "Matris simetriktir"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Bir kare matrisin tersinin olabilmesi için determinantının sıfırdan farklı olması zorunludur. det(A) = 0 ise matris tekildir.",
+      "difficulty": "kolay",
+      "stats": {
+        "times_asked": 16,
+        "times_correct": 13,
+        "times_wrong": 3,
+        "success_rate": 81.3
+      },
+      "created_at": "2025-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "q_mat_2",
+      "course_id": "MAT102",
+      "topic": "Vektör Uzayları",
+      "text": "v1 = [1, 2], v2 = [2, 4] vektörleri veriliyor. Bu iki vektörün lineer bağımlılık durumu nedir?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Lineer bağımsızdırlar çünkü her ikisi de sıfır vektörü değildir"
+        },
+        {
+          "id": "B",
+          "text": "Lineer bağımlıdırlar çünkü v2 = 2 * v1 ilişkisi mevcuttur"
+        },
+        {
+          "id": "C",
+          "text": "R² uzayının bir tabanını (basis) oluştururlar"
+        },
+        {
+          "id": "D",
+          "text": "Ortogonal (dik) vektörlerdir"
+        },
+        {
+          "id": "E",
+          "text": "Normları birbirine eşittir"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Biri diğerinin skaler katı olan vektörler lineer bağımlıdır (v2 - 2v1 = 0).",
+      "difficulty": "kolay",
+      "stats": {
+        "times_asked": 15,
+        "times_correct": 13,
+        "times_wrong": 2,
+        "success_rate": 86.7
+      },
+      "created_at": "2025-10-11T00:00:00.000Z"
+    },
+    {
+      "id": "q_mat_3",
+      "course_id": "MAT102",
+      "topic": "Özdeğer & Özvektör",
+      "text": "2x2 boyutundaki bir A matrisinin izi (trace) 7, determinantı 12 ise, bu matrisin özdeğerleri (eigenvalues) nelerdir?",
+      "options": [
+        {
+          "id": "A",
+          "text": "1 ve 12"
+        },
+        {
+          "id": "B",
+          "text": "3 ve 4"
+        },
+        {
+          "id": "C",
+          "text": "2 ve 6"
+        },
+        {
+          "id": "D",
+          "text": "-3 ve -4"
+        },
+        {
+          "id": "E",
+          "text": "5 ve 2"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "Özdeğerlerin toplamı matrisin izine eşittir (λ1 + λ2 = 7). Özdeğerlerin çarpımı determinante eşittir (λ1 * λ2 = 12). Buradan kökler 3 ve 4 çıkar.",
+      "difficulty": "normal",
+      "stats": {
+        "times_asked": 12,
+        "times_correct": 7,
+        "times_wrong": 5,
+        "success_rate": 58.3
+      },
+      "created_at": "2025-10-12T00:00:00.000Z"
+    },
+    {
+      "id": "q_mat_4",
+      "course_id": "MAT102",
+      "topic": "Olasılık Teorisi",
+      "text": "İki bağımsız olay A ve B için P(A) = 0.4 ve P(B) = 0.5 ise, A veya B olayının gerçekleşme olasılığı P(A ∪ B) kaçtır?",
+      "options": [
+        {
+          "id": "A",
+          "text": "0.90"
+        },
+        {
+          "id": "B",
+          "text": "0.20"
+        },
+        {
+          "id": "C",
+          "text": "0.70"
+        },
+        {
+          "id": "D",
+          "text": "0.60"
+        },
+        {
+          "id": "E",
+          "text": "0.50"
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "Bağımsız olaylarda P(A ∩ B) = P(A) * P(B) = 0.4 * 0.5 = 0.20. P(A ∪ B) = P(A) + P(B) - P(A ∩ B) = 0.4 + 0.5 - 0.2 = 0.70.",
+      "difficulty": "zor",
+      "stats": {
+        "times_asked": 10,
+        "times_correct": 3,
+        "times_wrong": 7,
+        "success_rate": 30
+      },
+      "created_at": "2025-10-13T00:00:00.000Z"
+    },
+    {
+      "id": "q_web_1",
+      "course_id": "WEB204",
+      "topic": "Web Güvenliği & JWT",
+      "text": "JSON Web Token (JWT) yapısı noktalarla ayrılmış üç ana bölümden oluşur. Bu bölümlerin doğru sıralaması nedir?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Payload . Header . Signature"
+        },
+        {
+          "id": "B",
+          "text": "Header . Payload . Signature"
+        },
+        {
+          "id": "C",
+          "text": "Signature . Header . Payload"
+        },
+        {
+          "id": "D",
+          "text": "Header . Signature . Encryption"
+        },
+        {
+          "id": "E",
+          "text": "Algorithm . Token . Key"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "JWT yapısı standart olarak Header (algoritma bilgisi), Payload (veriler/talepler) ve Signature (doğrulama imzası) şeklinde üç parçalıdır.",
+      "difficulty": "kolay",
+      "stats": {
+        "times_asked": 13,
+        "times_correct": 11,
+        "times_wrong": 2,
+        "success_rate": 84.6
+      },
+      "created_at": "2025-10-14T00:00:00.000Z"
+    },
+    {
+      "id": "q_web_2",
+      "course_id": "WEB204",
+      "topic": "HTTP Durum Kodları",
+      "text": "RESTful mimaride bir kaynağın istemci tarafından sunulan verilerle başarıyla yeni oluşturulduğunu belirten en uygun HTTP durum kodu hangisidir?",
+      "options": [
+        {
+          "id": "A",
+          "text": "200 OK"
+        },
+        {
+          "id": "B",
+          "text": "201 Created"
+        },
+        {
+          "id": "C",
+          "text": "204 No Content"
+        },
+        {
+          "id": "D",
+          "text": "202 Accepted"
+        },
+        {
+          "id": "E",
+          "text": "301 Moved Permanently"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "POST isteği sonucunda yeni bir varlık oluşturulduğunda standart olarak \"201 Created\" döndürülür.",
+      "difficulty": "kolay",
+      "stats": {
+        "times_asked": 15,
+        "times_correct": 13,
+        "times_wrong": 2,
+        "success_rate": 86.7
+      },
+      "created_at": "2025-10-15T00:00:00.000Z"
+    },
+    {
+      "id": "q_web_3",
+      "course_id": "WEB204",
+      "topic": "Web Güvenliği",
+      "text": "Kullanıcının tarayıcısında saklanan hassas oturum çerezlerinin (session cookies) istemci tarafı JavaScript kodları tarafından okunmasını engellemek için hangi çerez bayrağı kullanılmalıdır?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Secure"
+        },
+        {
+          "id": "B",
+          "text": "SameSite=Strict"
+        },
+        {
+          "id": "C",
+          "text": "HttpOnly"
+        },
+        {
+          "id": "D",
+          "text": "Domain"
+        },
+        {
+          "id": "E",
+          "text": "Path=/"
+        }
+      ],
+      "correct_answer": "C",
+      "explanation": "HttpOnly bayrağı ile işaretlenen çerezlere `document.cookie` üzerinden erişilemez; bu sayede XSS saldırılarında oturum çalınması engellenir.",
+      "difficulty": "normal",
+      "stats": {
+        "times_asked": 11,
+        "times_correct": 7,
+        "times_wrong": 4,
+        "success_rate": 63.6
+      },
+      "created_at": "2025-10-16T00:00:00.000Z"
+    },
+    {
+      "id": "q_web_4",
+      "course_id": "WEB204",
+      "topic": "CORS & Tarayıcı Güvenliği",
+      "text": "Tarayıcıların Cross-Origin Resource Sharing (CORS) mekanizmasında güvenli olmayan (örneğin DELETE veya özel başlıklı POST) isteklerden önce gönderdiği ön kontrol (preflight) isteğinin HTTP metodu nedir?",
+      "options": [
+        {
+          "id": "A",
+          "text": "HEAD"
+        },
+        {
+          "id": "B",
+          "text": "OPTIONS"
+        },
+        {
+          "id": "C",
+          "text": "TRACE"
+        },
+        {
+          "id": "D",
+          "text": "CONNECT"
+        },
+        {
+          "id": "E",
+          "text": "GET"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": "CORS ön kontrolü için tarayıcı otomatik olarak sunucuya OPTIONS metoduyla sorgu atarak izin verilen metotları ve başlıkları kontrol eder.",
+      "difficulty": "zor",
+      "stats": {
+        "times_asked": 9,
+        "times_correct": 3,
+        "times_wrong": 6,
+        "success_rate": 33.3
+      },
+      "created_at": "2025-10-17T00:00:00.000Z"
+    }
+  ],
+  "exams": [
+    {
+      "id": "exam_vize_blg201",
+      "title": "2025-2026 Güz Veri Yapıları ve Algoritmalar Vize Sınavı",
+      "course_id": "BLG201",
+      "exam_type": "vize",
+      "duration_minutes": 30,
+      "start_time": "2026-11-07T05:00:26.597Z",
+      "end_time": "2026-11-15T05:00:26.597Z",
+      "assigned_student_ids": [],
+      "passing_grade": 50,
+      "question_ids": [
+        "q_blg_1",
+        "q_blg_2",
+        "q_blg_3",
+        "q_blg_4",
+        "q_blg_5"
+      ],
+      "is_active": true,
+      "created_at": "2026-11-06T05:00:26.597Z"
+    },
+    {
+      "id": "exam_vize_ybs305",
+      "title": "Veritabanı Yönetim Sistemleri Ara Sınavı (Vize)",
+      "course_id": "YBS305",
+      "exam_type": "vize",
+      "duration_minutes": 25,
+      "start_time": "2026-11-07T05:00:26.597Z",
+      "end_time": "2026-11-15T05:00:26.597Z",
+      "assigned_student_ids": [
+        "muuofbvrmpm5e5b_1",
+        "muuofbvrmpm5e5b_3",
+        "muuofbvrmpm5e5b_4"
+      ],
+      "passing_grade": 60,
+      "question_ids": [
+        "q_ybs_1",
+        "q_ybs_2",
+        "q_ybs_3",
+        "q_ybs_4"
+      ],
+      "is_active": true,
+      "created_at": "2026-11-06T05:00:26.597Z"
+    },
+    {
+      "id": "exam_quiz_mat102",
+      "title": "Lineer Cebir ve Olasılık Kısa Sınav (Quiz 1)",
+      "course_id": "MAT102",
+      "exam_type": "quiz",
+      "duration_minutes": 20,
+      "start_time": "2026-11-07T05:00:26.597Z",
+      "end_time": "2026-11-09T05:00:26.597Z",
+      "assigned_student_ids": [],
+      "passing_grade": 50,
+      "question_ids": [
+        "q_mat_1",
+        "q_mat_2",
+        "q_mat_3",
+        "q_mat_4"
+      ],
+      "is_active": true,
+      "created_at": "2026-11-06T05:00:26.597Z"
+    },
+    {
+      "id": "exam_deneme_web204",
+      "title": "Modern Web Mimarileri & Güvenlik Deneme Sınavı",
+      "course_id": "WEB204",
+      "exam_type": "deneme",
+      "duration_minutes": 15,
+      "start_time": "2026-11-07T05:00:26.597Z",
+      "end_time": "2026-11-15T05:00:26.597Z",
+      "assigned_student_ids": [],
+      "passing_grade": 50,
+      "question_ids": [
+        "q_web_1",
+        "q_web_2",
+        "q_web_3",
+        "q_web_4"
+      ],
+      "is_active": true,
+      "created_at": "2026-11-06T05:00:26.597Z"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "attempt_demo_1",
+      "exam_id": "exam_quiz_mat102",
+      "student_id": "muuofbvrmpm5e5b_1",
+      "student_name": "Kemal Şahin",
+      "student_no": "20240101",
+      "course_id": "MAT102",
+      "started_at": "2026-11-08T01:00:26.597Z",
+      "completed_at": "2026-11-08T01:14:26.597Z",
+      "duration_seconds_taken": 840,
+      "answers": {
+        "q_mat_1": "B",
+        "q_mat_2": "B",
+        "q_mat_3": "B",
+        "q_mat_4": "A"
+      },
+      "score": 75,
+      "max_score": 100,
+      "percentage": 75,
+      "passed": true,
+      "total_questions": 4,
+      "correct_count": 3,
+      "wrong_count": 1,
+      "empty_count": 0,
+      "shuffled_questions": [
+        {
+          "id": "q_mat_1",
+          "original_question_id": "q_mat_1",
+          "text": "A kare matrisinin determinantı det(A) = 0 ise, bu matris hakkında aşağıdakilerden hangisi kesinlikle doğrudur?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Matrisin tersi (inversi) mevcuttur"
+            },
+            {
+              "id": "B",
+              "text": "Matris tekildir (singular) ve tersi (inverse) yoktur"
+            },
+            {
+              "id": "C",
+              "text": "Tüm elemanları sıfırdır"
+            },
+            {
+              "id": "D",
+              "text": "Özdeğerlerinin toplamı pozitiftir"
+            },
+            {
+              "id": "E",
+              "text": "Matris simetriktir"
+            }
+          ]
+        },
+        {
+          "id": "q_mat_2",
+          "original_question_id": "q_mat_2",
+          "text": "v1 = [1, 2], v2 = [2, 4] vektörleri veriliyor. Bu iki vektörün lineer bağımlılık durumu nedir?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Lineer bağımsızdırlar çünkü her ikisi de sıfır vektörü değildir"
+            },
+            {
+              "id": "B",
+              "text": "Lineer bağımlıdırlar çünkü v2 = 2 * v1 ilişkisi mevcuttur"
+            },
+            {
+              "id": "C",
+              "text": "R² uzayının bir tabanını (basis) oluştururlar"
+            },
+            {
+              "id": "D",
+              "text": "Ortogonal (dik) vektörlerdir"
+            },
+            {
+              "id": "E",
+              "text": "Normları birbirine eşittir"
+            }
+          ]
+        },
+        {
+          "id": "q_mat_3",
+          "original_question_id": "q_mat_3",
+          "text": "2x2 boyutundaki bir A matrisinin izi (trace) 7, determinantı 12 ise, bu matrisin özdeğerleri (eigenvalues) nelerdir?",
+          "options": [
+            {
+              "id": "A",
+              "text": "1 ve 12"
+            },
+            {
+              "id": "B",
+              "text": "3 ve 4"
+            },
+            {
+              "id": "C",
+              "text": "2 ve 6"
+            },
+            {
+              "id": "D",
+              "text": "-3 ve -4"
+            },
+            {
+              "id": "E",
+              "text": "5 ve 2"
+            }
+          ]
+        },
+        {
+          "id": "q_mat_4",
+          "original_question_id": "q_mat_4",
+          "text": "İki bağımsız olay A ve B için P(A) = 0.4 ve P(B) = 0.5 ise, A veya B olayının gerçekleşme olasılığı P(A ∪ B) kaçtır?",
+          "options": [
+            {
+              "id": "A",
+              "text": "0.90"
+            },
+            {
+              "id": "B",
+              "text": "0.20"
+            },
+            {
+              "id": "C",
+              "text": "0.70"
+            },
+            {
+              "id": "D",
+              "text": "0.60"
+            },
+            {
+              "id": "E",
+              "text": "0.50"
+            }
+          ]
+        }
+      ],
+      "nocodb_synced": false
+    },
+    {
+      "id": "attempt_demo_2",
+      "exam_id": "exam_vize_ybs305",
+      "student_id": "muuofbvrmpm5e5b_2",
+      "student_name": "Zeynep Kaya",
+      "student_no": "20240102",
+      "course_id": "YBS305",
+      "started_at": "2026-11-07T17:00:26.597Z",
+      "completed_at": "2026-11-07T17:18:26.597Z",
+      "duration_seconds_taken": 1080,
+      "answers": {
+        "q_ybs_1": "A",
+        "q_ybs_2": "B",
+        "q_ybs_3": "C",
+        "q_ybs_4": "B"
+      },
+      "score": 100,
+      "max_score": 100,
+      "percentage": 100,
+      "passed": true,
+      "total_questions": 4,
+      "correct_count": 4,
+      "wrong_count": 0,
+      "empty_count": 0,
+      "shuffled_questions": [
+        {
+          "id": "q_ybs_1",
+          "original_question_id": "q_ybs_1",
+          "text": "Bir veritabanı işleminde (transaction) tüm işlemlerin ya tamamen başarıyla tamamlanmasını ya da hata anında hiç yapılmamış gibi geri alınmasını (rollback) garanti eden ACID ilkesi hangisidir?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Atomicity (Bütünlük/Bölünemezlik)"
+            },
+            {
+              "id": "B",
+              "text": "Consistency (Tutarlılık)"
+            },
+            {
+              "id": "C",
+              "text": "Isolation (İzolasyon)"
+            },
+            {
+              "id": "D",
+              "text": "Durability (Kalıcılık)"
+            },
+            {
+              "id": "E",
+              "text": "Scalability (Ölçeklenebilirlik)"
+            }
+          ]
+        },
+        {
+          "id": "q_ybs_2",
+          "original_question_id": "q_ybs_2",
+          "text": "Bir ilişkisel tablonun İkinci Normal Formda (2NF) olabilmesi için 1NF şartının yanı sıra hangi ek koşulu sağlaması zorunludur?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Tüm sütunların tekil (unique) olması"
+            },
+            {
+              "id": "B",
+              "text": "Birincil anahtarın parçası olmayan tüm alanların tam fonksiyonel bağımlı olması (kısmi bağımlılık olmaması)"
+            },
+            {
+              "id": "C",
+              "text": "Geçişli (transitive) fonksiyonel bağımlılıkların bulunmaması"
+            },
+            {
+              "id": "D",
+              "text": "Çok değerli (multi-valued) bağımlılıkların ayrılması"
+            },
+            {
+              "id": "E",
+              "text": "Yabancı anahtar (foreign key) kısıtlamasının tanımlı olması"
+            }
+          ]
+        },
+        {
+          "id": "q_ybs_3",
+          "original_question_id": "q_ybs_3",
+          "text": "Aşağıdakilerden hangisi bir tabloda B-Tree indeks kullanımının en belirgin avantajıdır?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Veri ekleme (INSERT) hızını katlayarak artırması"
+            },
+            {
+              "id": "B",
+              "text": "Diskte kaplanan toplam depolama alanını azaltması"
+            },
+            {
+              "id": "C",
+              "text": "Aralık (range) ve eşitlik arama sorgularında disk I/O maliyetini düşürerek O(log N) erişim sağlaması"
+            },
+            {
+              "id": "D",
+              "text": "Veritabanı yedekleme süresini sıfırlaması"
+            },
+            {
+              "id": "E",
+              "text": "Tüm foreign key kısıtlarını otomatik olarak kaldırması"
+            }
+          ]
+        },
+        {
+          "id": "q_ybs_4",
+          "original_question_id": "q_ybs_4",
+          "text": "SQL standardında HAVING yan tümcesi ile WHERE yan tümcesi arasındaki temel fark nedir?",
+          "options": [
+            {
+              "id": "A",
+              "text": "HAVING yalnızca metinsel alanlarda çalışır, WHERE sayısal alanlarda çalışır"
+            },
+            {
+              "id": "B",
+              "text": "WHERE gruplamadan önce tekil satırları filtrelerken, HAVING gruplanmış (GROUP BY) agregasyon sonuçlarını filtreler"
+            },
+            {
+              "id": "C",
+              "text": "HAVING indeks kullanır, WHERE indeks kullanamaz"
+            },
+            {
+              "id": "D",
+              "text": "HAVING yalnızca JOIN sorgularında geçerlidir"
+            },
+            {
+              "id": "E",
+              "text": "Hiçbir fark yoktur, ikisi birbirinin yerine kullanılabilir"
+            }
+          ]
+        }
+      ],
+      "nocodb_synced": true,
+      "nocodb_sync_at": "2026-11-07T17:19:26.597Z"
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "eval_seed_1",
+      "student_id": "muuofbvrmpm5e5b_2",
+      "course_id": "YBS305",
+      "evaluation_title": "Veritabanı Yönetim Sistemleri Ara Sınavı (Vize)",
+      "score": 100,
+      "answers_json": "{\"q_ybs_1\":\"A\",\"q_ybs_2\":\"B\",\"q_ybs_3\":\"C\",\"q_ybs_4\":\"B\"}",
+      "file": null,
+      "completed_at": "2026-11-07T17:18:26.597Z"
+    }
+  ],
+  "nocodb_config": {
+    "base_url": "https://nocodb.app",
+    "api_token": "GxfVYtB9acDdVyjrOklF8jEz6bHXt1x0gXN-n3bJ",
+    "courses_table_id": "m935015e01psf34",
+    "students_table_id": "muuofbvrmpm5e5b",
+    "evaluation_table_id": "md50zxh2syamk2i",
+    "auto_sync_vize": true
+  },
+  "nocodb_logs": [
+    {
+      "id": "log_init",
+      "timestamp": "2026-11-08T05:00:26.597Z",
+      "type": "test_connection",
+      "status": "success",
+      "message": "Sistem başlatıldı. NocoDB lms_courses, lms_students ve lms_evaluation_results tabloları bağlandı."
+    }
+  ]
+}

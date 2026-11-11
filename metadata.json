@@ -1,0 +1,6 @@
+{
+  "name": "Akademik Sınav ve Ölçme Sistemi",
+  "description": "Gelişmiş soru havuzu, otomatik puanlama, dinamik zorluk derecelendirme ve NocoDB LMS entegrasyonlu online sınav platformu.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
