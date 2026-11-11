@@ -2,15 +2,10 @@ import React, { useState } from 'react';
 import { api } from '../api';
 import { LmsStudent } from '../types';
 import {
-  Lock,
   User,
-  GraduationCap,
-  ShieldCheck,
   ArrowRight,
   AlertCircle,
-  Sparkles,
   Phone,
-  HelpCircle,
 } from 'lucide-react';
 
 interface LoginPageProps {
@@ -22,7 +17,7 @@ interface LoginPageProps {
   students: LmsStudent[];
 }
 
-export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, students }) => {
+export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState('');
   const [credential, setCredential] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -42,12 +37,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, students }
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleQuickFill = (u: string, p: string) => {
-    setUsername(u);
-    setCredential(p);
-    setError(null);
   };
 
   return (
@@ -99,7 +88,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, students }
                   id="username"
                   type="text"
                   required
-                  placeholder="Örn: 20240101 veya kemalsahin@gmail.com"
+                  placeholder="Örn: 20262025100 veya kemalsahin@gmail.com"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:bg-white transition-colors"
@@ -120,7 +109,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, students }
                   id="credential"
                   type="password"
                   required
-                  placeholder="Örn: 0532 100 20 30 veya Şifreniz"
+                  placeholder="Örn: 5326820717 veya Şifreniz"
                   value={credential}
                   onChange={(e) => setCredential(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:bg-white transition-colors"
@@ -145,67 +134,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, students }
             </button>
           </form>
 
-          {/* Quick Helper / Demo Credentials Bar */}
-          <div className="mt-8 pt-6 border-t border-slate-100">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2.5">
-              Hızlı Test Girişleri (Tek Tıkla Doldur)
+          {/* Quiet Admin Helper Note */}
+          <div className="mt-6 pt-5 border-t border-slate-100 text-center">
+            <span className="text-[11px] text-slate-400 block">
+              Yönetici Girişi: <strong className="text-slate-600 font-mono">kemalsahin@gmail.com</strong> · Şifre: <strong className="text-slate-600 font-mono">admin123</strong>
             </span>
-
-            <div className="space-y-2">
-              {/* Admin Button */}
-              <button
-                type="button"
-                onClick={() => handleQuickFill('kemalsahin@gmail.com', 'admin123')}
-                className="w-full text-left p-2.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100/80 transition-colors flex items-center justify-between text-xs"
-              >
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-slate-700" />
-                  <div>
-                    <span className="font-semibold text-slate-900">Yönetici / Eğitmen</span>
-                    <span className="text-[11px] text-slate-500 block">kemalsahin@gmail.com (Şifre: admin123)</span>
-                  </div>
-                </div>
-                <span className="text-[11px] font-semibold text-slate-700">Seç →</span>
-              </button>
-
-              {/* Student 1 */}
-              <button
-                type="button"
-                onClick={() => handleQuickFill('20240101', '05321002030')}
-                className="w-full text-left p-2.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100/80 transition-colors flex items-center justify-between text-xs"
-              >
-                <div className="flex items-center gap-2">
-                  <GraduationCap className="w-4 h-4 text-slate-700" />
-                  <div>
-                    <span className="font-semibold text-slate-900">Kemal Şahin (Öğrenci)</span>
-                    <span className="text-[11px] text-slate-500 block">No: 20240101 · Tel: 0532 100 2030</span>
-                  </div>
-                </div>
-                <span className="text-[11px] font-semibold text-slate-700">Seç →</span>
-              </button>
-
-              {/* Student 2 */}
-              <button
-                type="button"
-                onClick={() => handleQuickFill('20240102', '05332113040')}
-                className="w-full text-left p-2.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100/80 transition-colors flex items-center justify-between text-xs"
-              >
-                <div className="flex items-center gap-2">
-                  <GraduationCap className="w-4 h-4 text-slate-700" />
-                  <div>
-                    <span className="font-semibold text-slate-900">Zeynep Kaya (Öğrenci)</span>
-                    <span className="text-[11px] text-slate-500 block">No: 20240102 · Tel: 0533 211 3040</span>
-                  </div>
-                </div>
-                <span className="text-[11px] font-semibold text-slate-700">Seç →</span>
-              </button>
-            </div>
           </div>
         </div>
 
         {/* Footer info note */}
         <div className="text-center mt-6 text-xs text-slate-400">
-          <span>NocoDB LMS: lms_students (muuofbvrmpm5e5b) tablosu ile eşleşir</span>
+          <span>NocoDB LMS: lms_students (muuofbvrmpm5e5b) tablosu ile doğrulanır</span>
         </div>
       </div>
     </div>

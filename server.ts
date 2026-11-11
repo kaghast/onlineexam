@@ -32,10 +32,10 @@ app.use(express.json({ limit: '10mb' }));
 // --- API ROUTES ---
 
 // Authentication (Students: student_no + phone, Admin: kemalsahin@gmail.com + password)
-app.post('/api/auth/login', (req: Request, res: Response) => {
+app.post('/api/auth/login', async (req: Request, res: Response) => {
   try {
     const { username, credential } = req.body;
-    const authResult = db.authenticateUser(username, credential);
+    const authResult = await db.authenticateUser(username, credential);
     res.json({ success: true, ...authResult });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);

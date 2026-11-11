@@ -102,6 +102,15 @@
       "email": "mehmet.ozturk@ogr.itu.edu.tr",
       "university": "İstanbul Teknik Üniversitesi",
       "department": "Matematik Mühendisliği"
+    },
+    {
+      "id": "muuofbvrmpm5e5b_student_20262025100",
+      "name_surname": "Öğrenci (20262025100)",
+      "student_no": "20262025100",
+      "phone": "5326820717",
+      "email": "20262025100@ogr.uni.edu.tr",
+      "university": "İstanbul Teknik Üniversitesi",
+      "department": "Mühendislik Fakültesi"
     }
   ],
   "questions": [
@@ -630,10 +639,10 @@
       "explanation": "JWT yapısı standart olarak Header (algoritma bilgisi), Payload (veriler/talepler) ve Signature (doğrulama imzası) şeklinde üç parçalıdır.",
       "difficulty": "kolay",
       "stats": {
-        "times_asked": 13,
+        "times_asked": 14,
         "times_correct": 11,
-        "times_wrong": 2,
-        "success_rate": 84.6
+        "times_wrong": 3,
+        "success_rate": 79
       },
       "created_at": "2025-10-14T00:00:00.000Z"
     },
@@ -668,10 +677,10 @@
       "explanation": "POST isteği sonucunda yeni bir varlık oluşturulduğunda standart olarak \"201 Created\" döndürülür.",
       "difficulty": "kolay",
       "stats": {
-        "times_asked": 15,
+        "times_asked": 16,
         "times_correct": 13,
-        "times_wrong": 2,
-        "success_rate": 86.7
+        "times_wrong": 3,
+        "success_rate": 81
       },
       "created_at": "2025-10-15T00:00:00.000Z"
     },
@@ -706,10 +715,10 @@
       "explanation": "HttpOnly bayrağı ile işaretlenen çerezlere `document.cookie` üzerinden erişilemez; bu sayede XSS saldırılarında oturum çalınması engellenir.",
       "difficulty": "normal",
       "stats": {
-        "times_asked": 11,
-        "times_correct": 7,
+        "times_asked": 12,
+        "times_correct": 8,
         "times_wrong": 4,
-        "success_rate": 63.6
+        "success_rate": 67
       },
       "created_at": "2025-10-16T00:00:00.000Z"
     },
@@ -744,10 +753,10 @@
       "explanation": "CORS ön kontrolü için tarayıcı otomatik olarak sunucuya OPTIONS metoduyla sorgu atarak izin verilen metotları ve başlıkları kontrol eder.",
       "difficulty": "zor",
       "stats": {
-        "times_asked": 9,
+        "times_asked": 10,
         "times_correct": 3,
-        "times_wrong": 6,
-        "success_rate": 33.3
+        "times_wrong": 7,
+        "success_rate": 30
       },
       "created_at": "2025-10-17T00:00:00.000Z"
     }
@@ -781,11 +790,7 @@
       "duration_minutes": 25,
       "start_time": "2026-11-07T05:00:26.597Z",
       "end_time": "2026-11-15T05:00:26.597Z",
-      "assigned_student_ids": [
-        "muuofbvrmpm5e5b_1",
-        "muuofbvrmpm5e5b_3",
-        "muuofbvrmpm5e5b_4"
-      ],
+      "assigned_student_ids": [],
       "passing_grade": 60,
       "question_ids": [
         "q_ybs_1",
@@ -1108,6 +1113,162 @@
       ],
       "nocodb_synced": true,
       "nocodb_sync_at": "2026-11-07T17:19:26.597Z"
+    },
+    {
+      "id": "attempt_1794425632083_z8jkk",
+      "exam_id": "exam_deneme_web204",
+      "student_id": "muuofbvrmpm5e5b_2",
+      "student_name": "Zeynep Kaya",
+      "student_no": "20240102",
+      "course_id": "WEB204",
+      "started_at": "2026-11-11T19:33:52.083Z",
+      "answers": {
+        "q_web_1": "E",
+        "q_web_3": "B",
+        "q_web_2": "D",
+        "q_web_4": "C"
+      },
+      "total_questions": 4,
+      "shuffled_questions": [
+        {
+          "id": "q_web_1",
+          "original_question_id": "q_web_1",
+          "text": "JSON Web Token (JWT) yapısı noktalarla ayrılmış üç ana bölümden oluşur. Bu bölümlerin doğru sıralaması nedir?",
+          "options": [
+            {
+              "id": "A",
+              "original_id": "C",
+              "text": "Signature . Header . Payload"
+            },
+            {
+              "id": "B",
+              "original_id": "A",
+              "text": "Payload . Header . Signature"
+            },
+            {
+              "id": "C",
+              "original_id": "B",
+              "text": "Header . Payload . Signature"
+            },
+            {
+              "id": "D",
+              "original_id": "D",
+              "text": "Header . Signature . Encryption"
+            },
+            {
+              "id": "E",
+              "original_id": "E",
+              "text": "Algorithm . Token . Key"
+            }
+          ]
+        },
+        {
+          "id": "q_web_3",
+          "original_question_id": "q_web_3",
+          "text": "Kullanıcının tarayıcısında saklanan hassas oturum çerezlerinin (session cookies) istemci tarafı JavaScript kodları tarafından okunmasını engellemek için hangi çerez bayrağı kullanılmalıdır?",
+          "options": [
+            {
+              "id": "A",
+              "original_id": "E",
+              "text": "Path=/"
+            },
+            {
+              "id": "B",
+              "original_id": "C",
+              "text": "HttpOnly"
+            },
+            {
+              "id": "C",
+              "original_id": "B",
+              "text": "SameSite=Strict"
+            },
+            {
+              "id": "D",
+              "original_id": "A",
+              "text": "Secure"
+            },
+            {
+              "id": "E",
+              "original_id": "D",
+              "text": "Domain"
+            }
+          ]
+        },
+        {
+          "id": "q_web_2",
+          "original_question_id": "q_web_2",
+          "text": "RESTful mimaride bir kaynağın istemci tarafından sunulan verilerle başarıyla yeni oluşturulduğunu belirten en uygun HTTP durum kodu hangisidir?",
+          "options": [
+            {
+              "id": "A",
+              "original_id": "E",
+              "text": "301 Moved Permanently"
+            },
+            {
+              "id": "B",
+              "original_id": "B",
+              "text": "201 Created"
+            },
+            {
+              "id": "C",
+              "original_id": "A",
+              "text": "200 OK"
+            },
+            {
+              "id": "D",
+              "original_id": "C",
+              "text": "204 No Content"
+            },
+            {
+              "id": "E",
+              "original_id": "D",
+              "text": "202 Accepted"
+            }
+          ]
+        },
+        {
+          "id": "q_web_4",
+          "original_question_id": "q_web_4",
+          "text": "Tarayıcıların Cross-Origin Resource Sharing (CORS) mekanizmasında güvenli olmayan (örneğin DELETE veya özel başlıklı POST) isteklerden önce gönderdiği ön kontrol (preflight) isteğinin HTTP metodu nedir?",
+          "options": [
+            {
+              "id": "A",
+              "original_id": "E",
+              "text": "GET"
+            },
+            {
+              "id": "B",
+              "original_id": "B",
+              "text": "OPTIONS"
+            },
+            {
+              "id": "C",
+              "original_id": "C",
+              "text": "TRACE"
+            },
+            {
+              "id": "D",
+              "original_id": "D",
+              "text": "CONNECT"
+            },
+            {
+              "id": "E",
+              "original_id": "A",
+              "text": "HEAD"
+            }
+          ]
+        }
+      ],
+      "nocodb_synced": false,
+      "completed_at": "2026-11-11T19:34:13.862Z",
+      "duration_seconds_taken": 22,
+      "correct_count": 1,
+      "wrong_count": 3,
+      "empty_count": 0,
+      "max_score": 100,
+      "score": 25,
+      "percentage": 25,
+      "passed": false
     }
   ],
   "evaluations": [
@@ -1120,6 +1281,16 @@
       "answers_json": "{\"q_ybs_1\":\"A\",\"q_ybs_2\":\"B\",\"q_ybs_3\":\"C\",\"q_ybs_4\":\"B\"}",
       "file": null,
       "completed_at": "2026-11-07T17:18:26.597Z"
+    },
+    {
+      "id": "eval_1794425653862",
+      "student_id": "muuofbvrmpm5e5b_2",
+      "course_id": "WEB204",
+      "evaluation_title": "Modern Web Mimarileri & Güvenlik Deneme Sınavı",
+      "score": 25,
+      "answers_json": "{\"q_web_1\":\"E\",\"q_web_3\":\"B\",\"q_web_2\":\"D\",\"q_web_4\":\"C\"}",
+      "file": null,
+      "completed_at": "2026-11-11T19:34:13.862Z"
     }
   ],
   "nocodb_config": {

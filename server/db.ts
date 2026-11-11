@@ -142,6 +142,15 @@ const initialStudents: LmsStudent[] = [
     university: 'İstanbul Teknik Üniversitesi',
     department: 'Matematik Mühendisliği',
   },
+  {
+    id: 'muuofbvrmpm5e5b_student_20262025100',
+    name_surname: 'Öğrenci (20262025100)',
+    student_no: '20262025100',
+    phone: '5326820717',
+    email: '20262025100@ogr.uni.edu.tr',
+    university: 'İstanbul Teknik Üniversitesi',
+    department: 'Mühendislik Fakültesi',
+  },
 ];
 
 const initialQuestions: Question[] = [
@@ -489,7 +498,7 @@ const initialExams: Exam[] = [
     duration_minutes: 25,
     start_time: yesterday.toISOString(),
     end_time: nextWeek.toISOString(),
-    assigned_student_ids: ['muuofbvrmpm5e5b_1', 'muuofbvrmpm5e5b_3', 'muuofbvrmpm5e5b_4'],
+    assigned_student_ids: [], // All students enrolled
     passing_grade: 60,
     question_ids: ['q_ybs_1', 'q_ybs_2', 'q_ybs_3', 'q_ybs_4'],
     is_active: true,
@@ -1491,7 +1500,7 @@ class AcademicDatabase {
     };
   }
 
-  authenticateUser(usernameOrNo: string, credentialOrPhone: string) {
+  async authenticateUser(usernameOrNo: string, credentialOrPhone: string) {
     const trimmedUser = (usernameOrNo || '').trim();
     const trimmedCred = (credentialOrPhone || '').trim();
 
@@ -1523,10 +1532,47 @@ class AcademicDatabase {
       }
     }
 
-    // 2. Student login check: match by student_no
-    const student = this.db.students.find(
-      (s) => s.student_no.trim() === trimmedUser || s.email.trim().toLowerCase() === trimmedUser.toLowerCase()
+    // 2. Student login check
+    // Check local database first
+    let student = this.db.students.find(
+      (s) =>
+        String(s.student_no).trim() === trimmedUser ||
+        String(s.email).trim().toLowerCase() === trimmedUser.toLowerCase()
     );
+
+    // If not found in local db, attempt to lookup in NocoDB in real-time
+    if (!student && this.db.nocodb_config.base_url && this.db.nocodb_config.api_token) {
+      try {
+        const cfg = this.db.nocodb_config;
+        const tableId = cfg.students_table_id || 'muuofbvrmpm5e5b';
+        const nocoUrl = `${cfg.base_url.replace(/\/$/, '')}/api/v2/tables/${tableId}/records?where=(student_no,eq,${encodeURIComponent(trimmedUser)})&limit=1`;
+        const nocoRes = await fetch(nocoUrl, {
+          headers: { 'xc-token': cfg.api_token },
+          signal: AbortSignal.timeout(3500),
+        });
+
+        if (nocoRes.ok) {
+          const data = await nocoRes.json();
+          const records = data.list || data.records || [];
+          if (records.length > 0) {
+            const r = records[0];
+            const fetchedStudent: LmsStudent = {
+              id: r.Id || r.id || `student_${Date.now()}`,
+              name_surname: r.name_surname || r.NameSurname || r.name || 'Öğrenci',
+              student_no: String(r.student_no || trimmedUser).trim(),
+              phone: String(r.phone || r.phone_number || '').trim(),
+              email: String(r.email || '').trim(),
+              university: r.university || '',
+              department: r.department || '',
+            };
+            this.saveStudent(fetchedStudent);
+            student = fetchedStudent;
+          }
+        }
+      } catch (err) {
+        console.warn('NocoDB real-time student lookup error:', err);
+      }
+    }
 
     if (!student) {
       throw new Error(`'${trimmedUser}' numaralı kayıtlı öğrenci bulunamadı. Lütfen öğrenci numaranızı kontrol ediniz.`);
