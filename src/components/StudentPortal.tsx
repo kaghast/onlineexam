@@ -56,7 +56,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
 
   // Filter exams assigned to this student (assigned_student_ids empty means all enrolled)
   const studentExams = exams.filter(
-    (e) => e.assigned_student_ids.length === 0 || e.assigned_student_ids.includes(student.id)
+    (e) => !e.assigned_student_ids || e.assigned_student_ids.length === 0 || e.assigned_student_ids.includes(student.id)
   );
 
   const getCourseForExam = (exam: Exam) => {
@@ -196,7 +196,9 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                             <BookOpen className="w-3.5 h-3.5" /> Soru Sayısı:
                           </span>
                           <span className="font-mono font-semibold text-slate-800">
-                            {exam.question_ids.length} Soru (Çoktan Seçmeli)
+                            {exam.question_count && exam.question_count > 0 && exam.question_count < exam.question_ids.length
+                              ? `${exam.question_count} Soru (Dengeli Rastgele Seçim)`
+                              : `${exam.question_ids.length} Soru (Çoktan Seçmeli)`}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">

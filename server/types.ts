@@ -61,6 +61,12 @@ export interface Question {
   topic?: string;
 }
 
+export interface LmsCourseStudent {
+  id: string;
+  course_id: string;
+  student_id: string;
+}
+
 export type ExamType = 'vize' | 'final' | 'quiz' | 'deneme';
 
 export interface Exam {
@@ -71,9 +77,15 @@ export interface Exam {
   duration_minutes: number;
   start_time: string; // ISO string
   end_time: string; // ISO string
-  assigned_student_ids: string[]; // empty array means all enrolled students
+  assigned_student_ids?: string[]; // optional/legacy
   passing_grade: number; // default 50
   question_ids: string[];
+  question_count?: number; // Sınav soru adeti
+  difficulty_ratio?: {
+    kolay?: number; // %
+    normal?: number; // %
+    zor?: number; // %
+  };
   is_active: boolean;
   created_at: string;
 }
@@ -116,6 +128,7 @@ export interface NocoDBConfig {
   project_id?: string;
   courses_table_id: string; // "m935015e01psf34"
   students_table_id: string; // "muuofbvrmpm5e5b"
+  courses_students_table_id: string; // "mfqru4rs0jp87fn"
   evaluation_table_id: string; // "md50zxh2syamk2i"
   auto_sync_vize: boolean;
   last_sync_time?: string;
@@ -124,7 +137,7 @@ export interface NocoDBConfig {
 export interface NocoDBSyncLog {
   id: string;
   timestamp: string;
-  type: 'courses_fetch' | 'students_fetch' | 'vize_result_push' | 'test_connection';
+  type: 'courses_fetch' | 'students_fetch' | 'enrollments_fetch' | 'vize_result_push' | 'test_connection';
   status: 'success' | 'warning' | 'error';
   message: string;
   details?: Record<string, unknown>;

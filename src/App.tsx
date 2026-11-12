@@ -267,22 +267,10 @@ export default function App() {
         )}
       </main>
 
-      {/* Clean Academic Minimal Footer */}
+      {/* Clean Minimal Footer */}
       <footer className="border-t border-slate-200 bg-white py-5 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-800">Akademik Sınav ve Ölçme Modülü</span>
-            <span aria-hidden="true">·</span>
-            <span>NocoDB LMS Entegre</span>
-          </div>
-
-          <div className="flex items-center gap-4 text-slate-400">
-            <span>lms_courses (m935015e01psf34)</span>
-            <span>·</span>
-            <span>lms_students (muuofbvrmpm5e5b)</span>
-            <span>·</span>
-            <span>lms_evaluation_results (md50zxh2syamk2i)</span>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+          <span>kemalsahin.com - Sınav // Ölçme & Değerlendirme Sistemi</span>
         </div>
       </footer>
     </div>

@@ -12,6 +12,8 @@ import {
   ExamType,
 } from '../types';
 import { api } from '../api';
+import { MarkdownRenderer } from './MarkdownRenderer';
+import { MarkdownEditor } from './MarkdownEditor';
 import {
   Layers,
   FileQuestion,
@@ -32,6 +34,7 @@ import {
   Award,
   Clock,
   Sparkles,
+  Shuffle,
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -80,6 +83,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [nocodbLogs, setNocodbLogs] = useState<NocoDBSyncLog[]>([]);
   const [syncingCourses, setSyncingCourses] = useState(false);
   const [syncingStudents, setSyncingStudents] = useState(false);
+  const [syncingEnrollments, setSyncingEnrollments] = useState(false);
+  const [enrollmentsCount, setEnrollmentsCount] = useState<number>(0);
   const [configSaveSuccess, setConfigSaveSuccess] = useState(false);
 
   // Student Report Search
@@ -108,6 +113,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       const { config, logs } = await api.getNocoDBConfig();
       setNocodbConfig(config);
       setNocodbLogs(logs);
+      const enr = await api.getCoursesStudents();
+      setEnrollmentsCount(enr.length);
     } catch (err) {
       console.error(err);
     }
@@ -227,6 +234,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const now = new Date();
     const end = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
+    const initialPoolIds = courseQuestions.map((q) => q.id);
+    const initialQuestionCount = courseQuestions.length > 0 ? Math.min(courseQuestions.length, 20) : 10;
+
     setEditingExam({
       title: 'Yeni Akademik Değerlendirme Sınavı',
       course_id: defaultCourse,
@@ -234,9 +244,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       duration_minutes: 30,
       start_time: now.toISOString().slice(0, 16),
       end_time: end.toISOString().slice(0, 16),
-      assigned_student_ids: [], // all students
+      assigned_student_ids: [], // Automatically enrolled from lms_courses_students
       passing_grade: 50,
-      question_ids: courseQuestions.slice(0, 5).map((q) => q.id),
+      question_ids: initialPoolIds,
+      question_count: initialQuestionCount,
+      difficulty_ratio: { kolay: 30, normal: 50, zor: 20 },
       is_active: true,
     });
     setIsExamModalOpen(true);
@@ -317,6 +329,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       alert('Öğrenciler senkronize edilemedi: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       setSyncingStudents(false);
+    }
+  };
+
+  const handleSyncEnrollments = async () => {
+    setSyncingEnrollments(true);
+    try {
+      const res = await api.syncCoursesStudents();
+      alert(res.message);
+      setEnrollmentsCount(res.count);
+      loadNocoDB();
+    } catch (err) {
+      alert('Ders-öğrenci kayıtları senkronize edilemedi: ' + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setSyncingEnrollments(false);
     }
   };
 
@@ -696,9 +722,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </div>
                   </div>
 
-                  <p className="text-sm font-medium text-slate-900 mb-4 leading-relaxed">
-                    {q.text}
-                  </p>
+                  <div className="mb-4">
+                    <MarkdownRenderer
+                      content={q.text}
+                      className="text-sm font-medium text-slate-900 leading-relaxed"
+                    />
+                  </div>
 
                   {/* Options */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
@@ -728,7 +757,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                   {q.explanation && (
                     <div className="text-xs text-slate-500 bg-slate-50 p-2.5 rounded border border-slate-100">
-                      <strong className="text-slate-700">Çözüm / Açıklama:</strong> {q.explanation}
+                      <strong className="text-slate-700 block mb-1">Çözüm / Açıklama:</strong>
+                      <MarkdownRenderer content={q.explanation} className="text-xs text-slate-600" />
                     </div>
                   )}
                 </div>
@@ -829,7 +859,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       </div>
                       <div className="flex justify-between">
                         <span>Soru Sayısı:</span>
-                        <span className="font-mono font-semibold text-slate-800">{exam.question_ids.length} Soru</span>
+                        <span className="font-mono font-semibold text-slate-800">
+                          {exam.question_count && exam.question_count < exam.question_ids.length
+                            ? `${exam.question_count} / ${exam.question_ids.length} (Dengeli Seçim)`
+                            : `${exam.question_ids.length} Soru`}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Geçerlilik Aralığı:</span>
@@ -838,11 +872,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Atanan Öğrenciler:</span>
+                        <span>Öğrenci Kapsamı:</span>
                         <span className="font-semibold text-slate-800">
-                          {exam.assigned_student_ids.length === 0
-                            ? 'Tüm Kayıtlı Öğrenciler'
-                            : `${exam.assigned_student_ids.length} Özel Seçilen Öğrenci`}
+                          {exam.assigned_student_ids && exam.assigned_student_ids.length > 0
+                            ? `${exam.assigned_student_ids.length} Özel Seçilen Öğrenci`
+                            : 'Dersi Alan Öğrenciler (lms_courses_students)'}
                         </span>
                       </div>
                     </div>
@@ -1081,7 +1115,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
 
               {/* Mapped Table IDs (Pre-configured as requested) */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
                 <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
                   <span className="text-[11px] text-slate-500 block">Dersler Tablosu (lms_courses)</span>
                   <span className="font-mono text-xs font-bold text-slate-800">{nocodbConfig.courses_table_id}</span>
@@ -1089,9 +1123,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
 
                 <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                  <span className="text-[11px] text-slate-500 block">Öğrenciler Tablosu (lms_students)</span>
+                  <span className="text-[11px] text-slate-500 block">Öğrenciler (lms_students)</span>
                   <span className="font-mono text-xs font-bold text-slate-800">{nocodbConfig.students_table_id}</span>
                   <p className="text-[10px] text-slate-400 mt-1">muuofbvrmpm5e5b</p>
+                </div>
+
+                <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                  <span className="text-[11px] text-slate-500 block">Ders-Öğrenci (lms_courses_students)</span>
+                  <span className="font-mono text-xs font-bold text-slate-800">{nocodbConfig.courses_students_table_id}</span>
+                  <p className="text-[10px] text-slate-400 mt-1">mfqru4rs0jp87fn ({enrollmentsCount} Kayıt)</p>
                 </div>
 
                 <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
@@ -1101,8 +1141,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-slate-100">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={handleSyncCourses}
@@ -1121,6 +1161,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${syncingStudents ? 'animate-spin' : ''}`} />
                     <span>Öğrencileri Çek (lms_students)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSyncEnrollments}
+                    disabled={syncingEnrollments}
+                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${syncingEnrollments ? 'animate-spin' : ''}`} />
+                    <span>Ders-Öğrenci Kayıtlarını Çek (lms_courses_students)</span>
                   </button>
                 </div>
 
@@ -1233,17 +1283,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
               </div>
 
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Soru Metni</label>
-                <textarea
-                  rows={3}
-                  placeholder="Soru metnini yazınız..."
-                  value={editingQuestion.text}
-                  onChange={(e) => setEditingQuestion({ ...editingQuestion, text: e.target.value })}
-                  required
-                  className="w-full bg-slate-50 border border-slate-200 rounded p-2.5 focus:ring-1 focus:ring-slate-900 focus:outline-none"
-                />
-              </div>
+              <MarkdownEditor
+                value={editingQuestion.text || ''}
+                onChange={(val) => setEditingQuestion({ ...editingQuestion, text: val })}
+                label="Soru Metni (Markdown & Resim Destekli)"
+                placeholder="Soru metnini yazınız. Panodan kopyaladığınız resmi veya ekran görüntüsünü doğrudan Ctrl+V ile buraya yapıştırabilirsiniz..."
+                required
+                rows={4}
+              />
 
               {/* Options A, B, C, D */}
               <div>
@@ -1283,18 +1330,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
               </div>
 
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">
-                  Çözüm Açıklaması (Sınav Sonrası Gösterilir)
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="Doğru cevabın gerekçesini ve çözüm adımlarını açıklayınız..."
-                  value={editingQuestion.explanation || ''}
-                  onChange={(e) => setEditingQuestion({ ...editingQuestion, explanation: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded p-2.5 focus:ring-1 focus:ring-slate-900 focus:outline-none"
-                />
-              </div>
+              <MarkdownEditor
+                value={editingQuestion.explanation || ''}
+                onChange={(val) => setEditingQuestion({ ...editingQuestion, explanation: val })}
+                label="Çözüm Açıklaması (Markdown Destekli - Sınav Sonrası Gösterilir)"
+                placeholder="Doğru cevabın gerekçesini, formüllerini ve çözüm adımlarını açıklayınız..."
+                rows={2}
+                helpText="💡 Çözüm adımlarına da formül, kod veya görsel ekleyebilirsiniz."
+              />
 
               <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
                 <button
@@ -1472,63 +1515,120 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
               </div>
 
-              {/* Student Assignment */}
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">
-                  Öğrenci Ataması (lms_students)
-                </label>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 max-h-36 overflow-y-auto space-y-1.5">
-                  <label className="flex items-center gap-2 font-bold text-slate-900 cursor-pointer pb-1 border-b border-slate-200">
-                    <input
-                      type="checkbox"
-                      checked={editingExam.assigned_student_ids?.length === 0}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setEditingExam({ ...editingExam, assigned_student_ids: [] });
-                        }
-                      }}
-                      className="accent-slate-900"
-                    />
-                    <span>Tüm Kayıtlı Öğrencilere Ata (Varsayılan)</span>
-                  </label>
-
-                  {students.map((st) => {
-                    const isChecked =
-                      editingExam.assigned_student_ids?.includes(st.id) ||
-                      editingExam.assigned_student_ids?.length === 0;
-
-                    return (
-                      <label key={st.id} className="flex items-center gap-2 text-slate-700 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={(e) => {
-                            let list = editingExam.assigned_student_ids || [];
-                            if (list.length === 0) {
-                              list = students.map((s) => s.id);
-                            }
-                            if (e.target.checked) {
-                              list = [...list, st.id];
-                            } else {
-                              list = list.filter((id) => id !== st.id);
-                            }
-                            setEditingExam({ ...editingExam, assigned_student_ids: list });
-                          }}
-                          className="accent-slate-900"
-                        />
-                        <span>{st.name_surname} ({st.student_no}) - {st.department}</span>
-                      </label>
-                    );
-                  })}
+              {/* Automatic Enrollment Info Card */}
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 flex items-start gap-3">
+                <Users className="w-4 h-4 text-slate-700 mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-slate-900 block text-xs">
+                      Otomatik Öğrenci İlişkisi (lms_courses_students)
+                    </span>
+                    <span className="font-mono text-[11px] bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded">
+                      mfqru4rs0jp87fn
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                    Bu dersi alan öğrenciler NocoDB <code className="font-mono text-slate-700">lms_courses_students</code> tablosundaki <code className="font-mono text-slate-700">course_id</code> ve <code className="font-mono text-slate-700">student_id</code> eşleştirmelerine göre otomatik olarak bu sınava atanır. Manuel öğrenci seçimi yapmanıza gerek yoktur.
+                  </p>
                 </div>
               </div>
 
-              {/* Question Selection for Exam */}
+              {/* Exam Question Count & Difficulty Proportions */}
+              {(() => {
+                const courseQuestions = questions.filter((q) => q.course_id === editingExam.course_id);
+                const selectedPool = courseQuestions.filter((q) => editingExam.question_ids?.includes(q.id));
+                const poolKolay = selectedPool.filter((q) => q.difficulty === 'kolay').length;
+                const poolNormal = selectedPool.filter((q) => q.difficulty === 'normal').length;
+                const poolZor = selectedPool.filter((q) => q.difficulty === 'zor').length;
+
+                const currentCount = editingExam.question_count || selectedPool.length || 10;
+
+                return (
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Shuffle className="w-4 h-4 text-slate-700" />
+                        <span className="font-semibold text-slate-900 text-xs">
+                          Sınavda Sorulacak Soru Adeti & Zorluk Dağılımı
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-500 font-mono">
+                        Havuz: {selectedPool.length} Soru (Kolay: {poolKolay}, Normal: {poolNormal}, Zor: {poolZor})
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                          Sınavda Sorulacak Soru Sayısı
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={Math.max(1, selectedPool.length)}
+                          value={currentCount}
+                          onChange={(e) => {
+                            const val = Math.max(1, parseInt(e.target.value) || 1);
+                            setEditingExam({ ...editingExam, question_count: val });
+                          }}
+                          className="w-full bg-white border border-slate-200 rounded p-2 font-mono text-xs focus:ring-1 focus:ring-slate-900 focus:outline-none"
+                        />
+                      </div>
+
+                      <div className="text-[11px] text-slate-600 space-y-1">
+                        <div className="font-medium text-slate-800">Hedef Zorluk Derecesi Oranı:</div>
+                        <div className="flex items-center gap-2 font-mono text-[10px]">
+                          <span className="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-semibold">%30 Kolay</span>
+                          <span className="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-semibold">%50 Normal</span>
+                          <span className="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-semibold">%20 Zor</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-[11px] text-slate-500 bg-white border border-slate-200 rounded p-2.5">
+                      ✓ Havuzda <strong>{selectedPool.length}</strong> soru tanımlıdır. Sınavda öğrenciye <strong>{Math.min(currentCount, selectedPool.length)}</strong> soru atanacaktır.
+                      Her öğrenci sınava girdiğinde sorular ve şıklar <strong>tekil olarak karıştırılır</strong> (shuffle).
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Question Selection for Pool */}
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
-                  Soru Seçimi ({editingExam.question_ids?.length || 0} Soru Seçildi)
-                </label>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 max-h-44 overflow-y-auto space-y-2">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block font-semibold text-slate-700">
+                    Soru Havuzu ({editingExam.question_ids?.length || 0} / {questions.filter((q) => q.course_id === editingExam.course_id).length} Soru Seçildi)
+                  </label>
+                  <div className="flex items-center gap-2 text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const allCourseQIds = questions
+                          .filter((q) => q.course_id === editingExam.course_id)
+                          .map((q) => q.id);
+                        setEditingExam({
+                          ...editingExam,
+                          question_ids: allCourseQIds,
+                          question_count: editingExam.question_count || allCourseQIds.length,
+                        });
+                      }}
+                      className="text-slate-700 hover:text-slate-900 font-medium underline"
+                    >
+                      Tümünü Havuza Ekle
+                    </button>
+                    <span className="text-slate-300">|</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingExam({ ...editingExam, question_ids: [] });
+                      }}
+                      className="text-slate-500 hover:text-slate-700 underline"
+                    >
+                      Temizle
+                    </button>
+                  </div>
+                </div>
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 max-h-48 overflow-y-auto space-y-2">
                   {questions
                     .filter((q) => q.course_id === editingExam.course_id)
                     .map((q) => {
@@ -1548,7 +1648,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           <div className="leading-snug">
                             <span className="font-medium text-slate-900">{q.text}</span>
                             <span className="text-[10px] text-slate-500 block">
-                              {q.topic || 'Genel'} · Zorluk: {q.difficulty} · Başarı: %{q.stats?.success_rate || 0}
+                              {q.topic || 'Genel'} · Zorluk: <strong className="uppercase">{q.difficulty}</strong> · Başarı: %{q.stats?.success_rate || 0}
                             </span>
                           </div>
                         </label>

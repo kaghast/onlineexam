@@ -11,6 +11,7 @@
       "department": "Mühendislik Fakültesi"
     }
   ],
+  "courses_students": [],
   "questions": [],
   "exams": [],
   "attempts": [],
@@ -20,8 +21,17 @@
     "api_token": "GxfVYtB9acDdVyjrOklF8jEz6bHXt1x0gXN-n3bJ",
     "courses_table_id": "m935015e01psf34",
     "students_table_id": "muuofbvrmpm5e5b",
+    "courses_students_table_id": "mfqru4rs0jp87fn",
     "evaluation_table_id": "md50zxh2syamk2i",
     "auto_sync_vize": true
   },
-  "nocodb_logs": []
+  "nocodb_logs": [
+    {
+      "id": "log_1794464200078_to5w",
+      "timestamp": "2026-11-12T06:16:40.078Z",
+      "type": "enrollments_fetch",
+      "status": "error",
+      "message": "NocoDB ders-öğrenci çekme hatası: fetch failed"
+    }
+  ]
 }

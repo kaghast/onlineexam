@@ -27,7 +27,11 @@ const app = express();
 const PORT = Number(getArg('port') || process.env.PORT) || 3000;
 const HOST = getArg('host') || '0.0.0.0';
 
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Serve uploaded question images statically
+app.use('/api/uploads', express.static(path.resolve(__dirname, 'data', 'uploads')));
 
 // --- API ROUTES ---
 
@@ -125,10 +129,28 @@ app.get('/api/questions/export', (req: Request, res: Response) => {
   res.send(JSON.stringify(questions, null, 2));
 });
 
+// Image Upload Endpoint for Question Markdown
+app.post('/api/upload', (req: Request, res: Response) => {
+  try {
+    const { image, filename } = req.body;
+    if (!image) {
+      res.status(400).json({ success: false, error: 'Görsel verisi gönderilmedi' });
+      return;
+    }
+    const url = db.saveUploadImage(image, filename);
+    res.json({ success: true, url });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(400).json({ success: false, error: msg });
+  }
+});
+
 // Exams Management
 app.get('/api/exams', (req: Request, res: Response) => {
   const courseId = req.query.course_id as string | undefined;
-  const exams = db.getExams(courseId);
+  const studentId = req.query.student_id as string | undefined;
+  const student = studentId ? db.getStudent(studentId) : undefined;
+  const exams = db.getExams(courseId, student);
   res.json({ success: true, exams });
 });
 
@@ -250,6 +272,16 @@ app.post('/api/nocodb/sync-courses', async (_req: Request, res: Response) => {
 app.post('/api/nocodb/sync-students', async (_req: Request, res: Response) => {
   const result = await db.syncStudentsFromNocoDB();
   res.json({ success: true, ...result, students: db.getStudents() });
+});
+
+// Course - Student Enrollments (lms_courses_students - mfqru4rs0jp87fn)
+app.get('/api/nocodb/courses-students', (_req: Request, res: Response) => {
+  res.json({ success: true, enrollments: db.getCoursesStudents() });
+});
+
+app.post('/api/nocodb/sync-courses-students', async (_req: Request, res: Response) => {
+  const result = await db.syncCoursesStudentsFromNocoDB();
+  res.json({ success: true, ...result, enrollments: db.getCoursesStudents() });
 });
 
 // Server boot with Vite middleware integration

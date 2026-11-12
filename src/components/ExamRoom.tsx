@@ -12,6 +12,7 @@ import {
   HelpCircle,
   BookOpen,
 } from 'lucide-react';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface ExamRoomProps {
   attempt: StudentExamAttempt;
@@ -193,9 +194,10 @@ export const ExamRoom: React.FC<ExamRoomProps> = ({
 
             {/* Question Text */}
             <div className="mb-8">
-              <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
-                {currentQuestion.text}
-              </p>
+              <MarkdownRenderer
+                content={currentQuestion.text}
+                className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed"
+              />
             </div>
 
             {/* Options List (A, B, C, D, E) */}

@@ -51,10 +51,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             Akademik Sınav & Ölçme
           </span>
         </div>
-
-        <p className="text-center text-xs text-slate-500 max-w-xs mx-auto">
-          T.C. Üniversite & LMS Sınav Yönetim Sistemi
-        </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -137,7 +133,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
         {/* Footer info note */}
         <div className="text-center mt-6 text-xs text-slate-400">
-          <span>Akademik Sınav ve Ölçme Portalı</span>
+          <span>Sınav // Ölçme & Değerlendirme Sistemi</span>
         </div>
       </div>
     </div>

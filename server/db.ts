@@ -3,6 +3,7 @@ import path from 'path';
 import {
   LmsCourse,
   LmsStudent,
+  LmsCourseStudent,
   LmsEvaluationResult,
   Question,
   Exam,
@@ -15,6 +16,7 @@ import {
 interface DatabaseSchema {
   courses: LmsCourse[];
   students: LmsStudent[];
+  courses_students: LmsCourseStudent[];
   questions: Question[];
   exams: Exam[];
   attempts: StudentExamAttempt[];
@@ -34,6 +36,49 @@ function shuffleArray<T>(array: T[]): T[] {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
+}
+
+// Select a subset of questions respecting difficulty proportions and balance
+function selectBalancedQuestions(
+  pool: Question[],
+  targetCount: number,
+  customRatios?: { kolay?: number; normal?: number; zor?: number }
+): Question[] {
+  if (pool.length <= targetCount) {
+    return shuffleArray(pool);
+  }
+
+  const kolayPool = shuffleArray(pool.filter((q) => q.difficulty === 'kolay'));
+  const normalPool = shuffleArray(pool.filter((q) => q.difficulty === 'normal'));
+  const zorPool = shuffleArray(pool.filter((q) => q.difficulty === 'zor'));
+
+  // Default difficulty distribution: 30% kolay, 50% normal, 20% zor
+  const rKolay = (customRatios?.kolay ?? 30) / 100;
+  const rNormal = (customRatios?.normal ?? 50) / 100;
+
+  let wantKolay = Math.round(targetCount * rKolay);
+  let wantNormal = Math.round(targetCount * rNormal);
+  let wantZor = targetCount - wantKolay - wantNormal;
+  if (wantZor < 0) wantZor = 0;
+
+  const selected: Question[] = [];
+  const take = (bucket: Question[], count: number) => {
+    const taken = bucket.splice(0, count);
+    selected.push(...taken);
+  };
+
+  take(kolayPool, wantKolay);
+  take(normalPool, wantNormal);
+  take(zorPool, wantZor);
+
+  // If some buckets had fewer questions than desired, fill the deficit from remaining
+  const deficit = targetCount - selected.length;
+  if (deficit > 0) {
+    const remaining = [...normalPool, ...kolayPool, ...zorPool];
+    selected.push(...remaining.slice(0, deficit));
+  }
+
+  return shuffleArray(selected);
 }
 
 // Initial seed data (All dummy data removed - real data originates from NocoDB or admin creation)
@@ -64,6 +109,7 @@ const initialNocoDBConfig: NocoDBConfig = {
   api_token: process.env.NOCODB_API_TOKEN || 'GxfVYtB9acDdVyjrOklF8jEz6bHXt1x0gXN-n3bJ',
   courses_table_id: 'm935015e01psf34',
   students_table_id: 'muuofbvrmpm5e5b',
+  courses_students_table_id: 'mfqru4rs0jp87fn',
   evaluation_table_id: 'md50zxh2syamk2i',
   auto_sync_vize: true,
 };
@@ -97,6 +143,7 @@ class AcademicDatabase {
         return {
           courses: parsed.courses || initialCourses,
           students: parsed.students || initialStudents,
+          courses_students: parsed.courses_students || [],
           questions: parsed.questions || initialQuestions,
           exams: parsed.exams || initialExams,
           attempts: parsed.attempts || initialAttempts,
@@ -104,6 +151,8 @@ class AcademicDatabase {
           nocodb_config: {
             ...initialNocoDBConfig,
             ...(parsed.nocodb_config || {}),
+            courses_students_table_id:
+              parsed.nocodb_config?.courses_students_table_id || initialNocoDBConfig.courses_students_table_id,
             api_token: parsed.nocodb_config?.api_token || initialNocoDBConfig.api_token,
           },
           nocodb_logs: parsed.nocodb_logs || [],
@@ -116,6 +165,7 @@ class AcademicDatabase {
     const fresh: DatabaseSchema = {
       courses: initialCourses,
       students: initialStudents,
+      courses_students: [],
       questions: initialQuestions,
       exams: initialExams,
       attempts: initialAttempts,
@@ -127,7 +177,7 @@ class AcademicDatabase {
           timestamp: new Date().toISOString(),
           type: 'test_connection',
           status: 'success',
-          message: 'Sistem başlatıldı. NocoDB lms_courses, lms_students ve lms_evaluation_results tabloları bağlandı.',
+          message: 'Sistem başlatıldı. NocoDB lms_courses, lms_students, lms_courses_students ve lms_evaluation_results tabloları bağlandı.',
         },
       ],
     };
@@ -189,6 +239,49 @@ class AcademicDatabase {
     }
     this.saveDatabase();
     return student;
+  }
+
+  // --- COURSE - STUDENT ENROLLMENTS (lms_courses_students - mfqru4rs0jp87fn) ---
+  getCoursesStudents(): LmsCourseStudent[] {
+    return this.db.courses_students || [];
+  }
+
+  saveCourseStudent(cs: LmsCourseStudent): LmsCourseStudent {
+    if (!this.db.courses_students) this.db.courses_students = [];
+    const idx = this.db.courses_students.findIndex((item) => item.id === cs.id);
+    if (idx >= 0) {
+      this.db.courses_students[idx] = cs;
+    } else {
+      this.db.courses_students.push(cs);
+    }
+    this.saveDatabase();
+    return cs;
+  }
+
+  isStudentEnrolledInCourse(student: LmsStudent, courseIdOrCode: string): boolean {
+    const enrollments = this.db.courses_students || [];
+    // If no enrollments exist in db yet, allow access so offline/initial mode is functional
+    if (enrollments.length === 0) return true;
+
+    const course = this.getCourse(courseIdOrCode);
+    const validCourseIdentifiers = new Set<string>();
+    validCourseIdentifiers.add(courseIdOrCode.trim().toLowerCase());
+    if (course) {
+      if (course.id) validCourseIdentifiers.add(String(course.id).trim().toLowerCase());
+      if (course.course_id) validCourseIdentifiers.add(String(course.course_id).trim().toLowerCase());
+      if (course.course_code) validCourseIdentifiers.add(String(course.course_code).trim().toLowerCase());
+    }
+
+    const validStudentIdentifiers = new Set<string>();
+    if (student.id) validStudentIdentifiers.add(String(student.id).trim().toLowerCase());
+    if (student.student_no) validStudentIdentifiers.add(String(student.student_no).trim().toLowerCase());
+    if (student.email) validStudentIdentifiers.add(String(student.email).trim().toLowerCase());
+
+    return enrollments.some((enr) => {
+      const enrCourse = String(enr.course_id || '').trim().toLowerCase();
+      const enrStudent = String(enr.student_id || '').trim().toLowerCase();
+      return validCourseIdentifiers.has(enrCourse) && validStudentIdentifiers.has(enrStudent);
+    });
   }
 
   // --- QUESTIONS ---
@@ -256,6 +349,30 @@ class AcademicDatabase {
     return false;
   }
 
+  // --- IMAGE UPLOADS FOR QUESTIONS ---
+  saveUploadImage(base64Data: string, originalName?: string): string {
+    const UPLOADS_DIR = path.resolve(DATA_DIR, 'uploads');
+    if (!fs.existsSync(UPLOADS_DIR)) {
+      fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+    }
+
+    let ext = 'png';
+    let rawBase64 = base64Data;
+    const match = base64Data.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+    if (match) {
+      const mime = match[1].toLowerCase();
+      ext = mime === 'jpeg' ? 'jpg' : mime === 'svg+xml' ? 'svg' : mime;
+      rawBase64 = match[2];
+    } else if (originalName && originalName.includes('.')) {
+      ext = originalName.split('.').pop() || 'png';
+    }
+
+    const filename = `img_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
+    const filePath = path.join(UPLOADS_DIR, filename);
+    fs.writeFileSync(filePath, Buffer.from(rawBase64, 'base64'));
+    return `/api/uploads/${filename}`;
+  }
+
   importQuestions(importedQuestions: unknown[]): { added: number; errors: string[] } {
     const errors: string[] = [];
     let added = 0;
@@ -300,11 +417,15 @@ class AcademicDatabase {
   }
 
   // --- EXAMS ---
-  getExams(courseId?: string): Exam[] {
+  getExams(courseId?: string, student?: LmsStudent): Exam[] {
+    let list = this.db.exams;
     if (courseId && courseId !== 'all') {
-      return this.db.exams.filter((e) => e.course_id === courseId);
+      list = list.filter((e) => e.course_id === courseId);
     }
-    return this.db.exams;
+    if (student) {
+      list = list.filter((e) => this.isStudentEnrolledInCourse(student, e.course_id));
+    }
+    return list;
   }
 
   getExam(id: string): Exam | undefined {
@@ -326,6 +447,8 @@ class AcademicDatabase {
       assigned_student_ids: exam.assigned_student_ids || [],
       passing_grade: exam.passing_grade || 50,
       question_ids: exam.question_ids || [],
+      question_count: exam.question_count && exam.question_count > 0 ? exam.question_count : undefined,
+      difficulty_ratio: exam.difficulty_ratio || { kolay: 30, normal: 50, zor: 20 },
       is_active: exam.is_active !== undefined ? exam.is_active : true,
       created_at: exam.created_at || new Date().toISOString(),
     };
@@ -364,6 +487,8 @@ class AcademicDatabase {
   /**
    * Start or resume an exam for a student.
    * Crucial rule: Questions AND choices (options) must be SHUFFLED uniquely per student!
+   * Automatically verifies enrollment in lms_courses_students (mfqru4rs0jp87fn).
+   * Automatically samples exam.question_count questions with balanced difficulty proportions.
    */
   startExamAttempt(examId: string, studentId: string): { attempt: StudentExamAttempt; isNew: boolean } {
     const exam = this.getExam(examId);
@@ -384,8 +509,13 @@ class AcademicDatabase {
       throw new Error(`Sınavın süresi dolmuştur. Bitiş zamanı: ${endTime.toLocaleString('tr-TR')}`);
     }
 
-    // Check if student is assigned
-    if (exam.assigned_student_ids.length > 0 && !exam.assigned_student_ids.includes(student.id)) {
+    // Check enrollment from lms_courses_students (mfqru4rs0jp87fn)
+    if (!this.isStudentEnrolledInCourse(student, exam.course_id)) {
+      throw new Error(`Bu dersi (${exam.course_id}) almadığınız için sınava giriş yetkiniz bulunmamaktadır (lms_courses_students eşleşmesi bulunamadı).`);
+    }
+
+    // Check if legacy manual assigned_student_ids was set
+    if (exam.assigned_student_ids && exam.assigned_student_ids.length > 0 && !exam.assigned_student_ids.includes(student.id)) {
       throw new Error('Bu sınav size atanmamıştır.');
     }
 
@@ -398,17 +528,25 @@ class AcademicDatabase {
       return { attempt: existingAttempt, isNew: false };
     }
 
-    // Gather questions
-    const originalQuestions = exam.question_ids
+    // Gather question pool
+    const pool = exam.question_ids
       .map((qid) => this.getQuestion(qid))
       .filter((q): q is Question => q !== undefined);
 
-    if (originalQuestions.length === 0) {
+    if (pool.length === 0) {
       throw new Error('Bu sınavda soru bulunmamaktadır.');
     }
 
-    // 1. Shuffle question order for this student
-    const shuffledQList = shuffleArray(originalQuestions);
+    // Sample question_count questions respecting difficulty ratios if specified
+    const targetQCount =
+      exam.question_count && exam.question_count > 0 && exam.question_count < pool.length
+        ? exam.question_count
+        : pool.length;
+
+    const sampledQuestions = selectBalancedQuestions(pool, targetQCount, exam.difficulty_ratio);
+
+    // 1. Shuffle question order uniquely for this student
+    const shuffledQList = shuffleArray(sampledQuestions);
 
     // 2. Shuffle options for each question uniquely for this student
     const studentShuffledQuestions: ShuffledQuestionForStudent[] = shuffledQList.map((q) => {
@@ -801,6 +939,66 @@ class AcademicDatabase {
         type: 'students_fetch',
         status: 'error',
         message: `NocoDB öğrenci çekme hatası: ${errMsg}`,
+      });
+      return { count: 0, message: errMsg };
+    }
+  }
+
+  /**
+   * Syncs course-student enrollments from NocoDB table `lms_courses_students` (`mfqru4rs0jp87fn`)
+   */
+  async syncCoursesStudentsFromNocoDB(): Promise<{ count: number; message: string }> {
+    const cfg = this.db.nocodb_config;
+    if (!cfg.base_url || !cfg.api_token) {
+      return {
+        count: (this.db.courses_students || []).length,
+        message: 'NocoDB API bilgileri girilmediği için yerel kayıtlar kullanılıyor.',
+      };
+    }
+
+    try {
+      const tableId = cfg.courses_students_table_id || 'mfqru4rs0jp87fn';
+      const endpoint = `${cfg.base_url.replace(/\/$/, '')}/api/v2/tables/${tableId}/records?limit=500`;
+
+      const response = await fetch(endpoint, {
+        headers: { 'xc-token': cfg.api_token },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Ders-öğrenci kayıtları çekilemedi (${response.status}): ${await response.text()}`);
+      }
+
+      const data = await response.json();
+      const records = data.list || data.records || [];
+      const synced: LmsCourseStudent[] = [];
+
+      for (const r of records) {
+        const enr: LmsCourseStudent = {
+          id: String(r.Id || r.id || `cs_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`),
+          course_id: String(r.course_id || r.course_code || r.CourseId || '').trim(),
+          student_id: String(r.student_id || r.student_no || r.StudentId || '').trim(),
+        };
+        if (enr.course_id && enr.student_id) {
+          synced.push(enr);
+        }
+      }
+
+      this.db.courses_students = synced;
+      this.saveDatabase();
+
+      this.addNocoDBLog({
+        type: 'enrollments_fetch',
+        status: 'success',
+        message: `NocoDB (${tableId}) tablosundan ${synced.length} ders-öğrenci eşleşmesi başarıyla çekildi.`,
+      });
+
+      return { count: synced.length, message: `${synced.length} ders-öğrenci kaydı başarıyla NocoDB'den güncellendi.` };
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      this.addNocoDBLog({
+        type: 'enrollments_fetch',
+        status: 'error',
+        message: `NocoDB ders-öğrenci çekme hatası: ${errMsg}`,
       });
       return { count: 0, message: errMsg };
     }

@@ -9,6 +9,7 @@ import {
   Database,
   Award,
 } from 'lucide-react';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface ExamResultViewProps {
   attempt: StudentExamAttempt;
@@ -238,9 +239,10 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
                   </div>
                 </div>
 
-                <p className="text-sm font-medium text-slate-900 mb-4 leading-relaxed">
-                  {sq.text}
-                </p>
+                <MarkdownRenderer
+                  content={sq.text}
+                  className="text-sm font-medium text-slate-900 mb-4 leading-relaxed"
+                />
 
                 {/* Options Review */}
                 <div className="space-y-2 mb-4">
@@ -293,7 +295,10 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
                     <span className="font-semibold text-slate-900 block mb-1">
                       Çözüm & Açıklama:
                     </span>
-                    {originalQ.explanation}
+                    <MarkdownRenderer
+                      content={originalQ.explanation}
+                      className="text-xs text-slate-700 leading-relaxed"
+                    />
                   </div>
                 )}
               </div>

@@ -1,6 +1,7 @@
 import {
   LmsCourse,
   LmsStudent,
+  LmsCourseStudent,
   Question,
   Exam,
   StudentExamAttempt,
@@ -82,10 +83,22 @@ export const api = {
     return { added: json.added || 0, errors: json.errors || [] };
   },
 
+  async uploadImage(image: string, filename?: string): Promise<{ success: boolean; url: string }> {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image, filename }),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Görsel yüklenemedi');
+    return json;
+  },
+
   // Exams
-  async getExams(courseId?: string): Promise<Exam[]> {
+  async getExams(courseId?: string, studentId?: string): Promise<Exam[]> {
     const params = new URLSearchParams();
     if (courseId) params.append('course_id', courseId);
+    if (studentId) params.append('student_id', studentId);
     const res = await fetch(`/api/exams?${params.toString()}`);
     const json = await res.json();
     return json.exams || [];
@@ -200,6 +213,18 @@ export const api = {
 
   async syncStudents(): Promise<{ count: number; message: string; students: LmsStudent[] }> {
     const res = await fetch('/api/nocodb/sync-students', { method: 'POST' });
+    const json = await res.json();
+    return json;
+  },
+
+  async getCoursesStudents(): Promise<LmsCourseStudent[]> {
+    const res = await fetch('/api/nocodb/courses-students');
+    const json = await res.json();
+    return json.enrollments || [];
+  },
+
+  async syncCoursesStudents(): Promise<{ count: number; message: string; enrollments: LmsCourseStudent[] }> {
+    const res = await fetch('/api/nocodb/sync-courses-students', { method: 'POST' });
     const json = await res.json();
     return json;
   },
