@@ -81,14 +81,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 htmlFor="username"
                 className="block text-xs font-semibold text-slate-700 mb-1.5"
               >
-                Öğrenci Numarası <span className="font-normal text-slate-400">(veya Yönetici E-postası)</span>
+                Öğrenci Numarası / E-posta
               </label>
               <div className="relative">
                 <input
                   id="username"
                   type="text"
                   required
-                  placeholder="Örn: 20262025100 veya kemalsahin@gmail.com"
+                  placeholder="Örn: 20262025100"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:bg-white transition-colors"
@@ -102,14 +102,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 htmlFor="credential"
                 className="block text-xs font-semibold text-slate-700 mb-1.5"
               >
-                Cep Telefonu Numarası <span className="font-normal text-slate-400">(veya Yönetici Şifresi)</span>
+                Cep Telefonu Numarası / Şifre
               </label>
               <div className="relative">
                 <input
                   id="credential"
                   type="password"
                   required
-                  placeholder="Örn: 5326820717 veya Şifreniz"
+                  placeholder="Örn: 5326820717"
                   value={credential}
                   onChange={(e) => setCredential(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:bg-white transition-colors"
@@ -133,18 +133,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               )}
             </button>
           </form>
-
-          {/* Quiet Admin Helper Note */}
-          <div className="mt-6 pt-5 border-t border-slate-100 text-center">
-            <span className="text-[11px] text-slate-400 block">
-              Yönetici Girişi: <strong className="text-slate-600 font-mono">kemalsahin@gmail.com</strong> · Şifre: <strong className="text-slate-600 font-mono">admin123</strong>
-            </span>
-          </div>
         </div>
 
         {/* Footer info note */}
         <div className="text-center mt-6 text-xs text-slate-400">
-          <span>NocoDB LMS: lms_students (muuofbvrmpm5e5b) tablosu ile doğrulanır</span>
+          <span>Akademik Sınav ve Ölçme Portalı</span>
         </div>
       </div>
     </div>

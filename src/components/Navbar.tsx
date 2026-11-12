@@ -41,39 +41,34 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Zone 2: Navigation Links */}
         <nav className="hidden md:flex items-center gap-1 shrink-0 p-1 bg-slate-100 rounded-lg text-xs font-medium text-slate-600">
-          <button
-            onClick={() => onSelectTab('student_exams')}
-            className={`px-3 py-1.5 rounded-md transition-colors whitespace-nowrap ${
-              currentTab === 'student_exams'
-                ? 'bg-white text-slate-950 shadow-xs font-semibold'
-                : 'hover:text-slate-900'
-            }`}
-          >
-            Sınavlarım
-          </button>
-          <button
-            onClick={() => onSelectTab('student_performance')}
-            className={`px-3 py-1.5 rounded-md transition-colors whitespace-nowrap ${
-              currentTab === 'student_performance'
-                ? 'bg-white text-slate-950 shadow-xs font-semibold'
-                : 'hover:text-slate-900'
-            }`}
-          >
-            Karnem & Analiz
-          </button>
-
-          {isAdmin && (
-            <button
-              onClick={() => onSelectTab('admin')}
-              className={`px-3 py-1.5 rounded-md transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                currentTab === 'admin'
-                  ? 'bg-slate-900 text-white shadow-xs font-semibold'
-                  : 'hover:text-slate-900 text-slate-700'
-              }`}
-            >
+          {isAdmin ? (
+            <div className="px-3.5 py-1.5 rounded-md bg-slate-900 text-white font-semibold flex items-center gap-1.5 text-xs shadow-xs">
               <ShieldCheck className="w-3.5 h-3.5" />
-              Yönetici Paneli
-            </button>
+              <span>Yönetici Paneli</span>
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={() => onSelectTab('student_exams')}
+                className={`px-3 py-1.5 rounded-md transition-colors whitespace-nowrap ${
+                  currentTab === 'student_exams'
+                    ? 'bg-white text-slate-950 shadow-xs font-semibold'
+                    : 'hover:text-slate-900'
+                }`}
+              >
+                Sınavlarım
+              </button>
+              <button
+                onClick={() => onSelectTab('student_performance')}
+                className={`px-3 py-1.5 rounded-md transition-colors whitespace-nowrap ${
+                  currentTab === 'student_performance'
+                    ? 'bg-white text-slate-950 shadow-xs font-semibold'
+                    : 'hover:text-slate-900'
+                }`}
+              >
+                Karnem & Analiz
+              </button>
+            </>
           )}
         </nav>
 
@@ -113,29 +108,23 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Mobile nav strip */}
-      <div className="md:hidden flex items-center justify-around border-t border-slate-200 px-2 py-1.5 bg-slate-50 text-xs">
-        <button
-          onClick={() => onSelectTab('student_exams')}
-          className={`px-2 py-1 rounded ${currentTab === 'student_exams' ? 'font-bold text-slate-900 bg-white' : 'text-slate-600'}`}
-        >
-          Sınavlarım
-        </button>
-        <button
-          onClick={() => onSelectTab('student_performance')}
-          className={`px-2 py-1 rounded ${currentTab === 'student_performance' ? 'font-bold text-slate-900 bg-white' : 'text-slate-600'}`}
-        >
-          Karnem
-        </button>
-        {isAdmin && (
+      {/* Mobile nav strip - only for students */}
+      {!isAdmin && (
+        <div className="md:hidden flex items-center justify-around border-t border-slate-200 px-2 py-1.5 bg-slate-50 text-xs">
           <button
-            onClick={() => onSelectTab('admin')}
-            className={`px-2 py-1 rounded ${currentTab === 'admin' ? 'font-bold text-white bg-slate-900' : 'text-slate-600'}`}
+            onClick={() => onSelectTab('student_exams')}
+            className={`px-2 py-1 rounded ${currentTab === 'student_exams' ? 'font-bold text-slate-900 bg-white' : 'text-slate-600'}`}
           >
-            Yönetici
+            Sınavlarım
           </button>
-        )}
-      </div>
+          <button
+            onClick={() => onSelectTab('student_performance')}
+            className={`px-2 py-1 rounded ${currentTab === 'student_performance' ? 'font-bold text-slate-900 bg-white' : 'text-slate-600'}`}
+          >
+            Karnem
+          </button>
+        </div>
+      )}
     </header>
   );
 };

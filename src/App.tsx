@@ -244,7 +244,7 @@ export default function App() {
               refreshAllData();
             }}
           />
-        ) : currentTab === 'admin' ? (
+        ) : currentUser.role === 'admin' ? (
           <AdminPanel
             courses={courses}
             students={students}

@@ -115,8 +115,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   // --- QUESTION HANDLERS ---
   const handleOpenNewQuestion = () => {
+    if (courses.length === 0) {
+      alert('Soru ekleyebilmek için önce NocoDB sekmesinden dersleri senkronize ediniz veya bir ders tanımlayınız.');
+      return;
+    }
     setEditingQuestion({
-      course_id: courses[0]?.course_id || 'BLG201',
+      course_id: courses[0]?.course_id || '',
       text: '',
       options: [
         { id: 'A', text: '' },
@@ -213,7 +217,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   // --- EXAM HANDLERS ---
   const handleOpenNewExam = () => {
-    const defaultCourse = courses[0]?.course_id || 'BLG201';
+    if (courses.length === 0) {
+      alert('Sınav oluşturabilmek için önce NocoDB sekmesinden dersleri senkronize ediniz veya bir ders tanımlayınız.');
+      return;
+    }
+    const defaultCourse = courses[0]?.course_id || '';
     const courseQuestions = questions.filter((q) => q.course_id === defaultCourse);
 
     const now = new Date();
@@ -517,20 +525,28 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {analytics.courseStats.map((cs) => (
-                      <tr key={cs.course_id} className="hover:bg-slate-50/50">
-                        <td className="py-3 font-mono font-bold text-slate-900">{cs.course_code}</td>
-                        <td className="py-3 text-slate-800 font-medium">{cs.course_name}</td>
-                        <td className="py-3 font-mono text-slate-600">{cs.total_questions} Soru</td>
-                        <td className="py-3 font-mono text-slate-600">{cs.attempts_count}</td>
-                        <td className="py-3 font-mono font-bold text-slate-900">
-                          {cs.average_score > 0 ? `${cs.average_score} / 100` : '—'}
-                        </td>
-                        <td className="py-3 font-mono text-emerald-700 font-semibold">
-                          {cs.attempts_count > 0 ? `%{cs.pass_rate}` : '—'}
+                    {analytics.courseStats.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-8 text-center text-slate-400">
+                          Henüz kayıtlı ders bulunmuyor. NocoDB sekmesinden senkronize edebilirsiniz.
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      analytics.courseStats.map((cs) => (
+                        <tr key={cs.course_id} className="hover:bg-slate-50/50">
+                          <td className="py-3 font-mono font-bold text-slate-900">{cs.course_code}</td>
+                          <td className="py-3 text-slate-800 font-medium">{cs.course_name}</td>
+                          <td className="py-3 font-mono text-slate-600">{cs.total_questions} Soru</td>
+                          <td className="py-3 font-mono text-slate-600">{cs.attempts_count}</td>
+                          <td className="py-3 font-mono font-bold text-slate-900">
+                            {cs.average_score > 0 ? `${cs.average_score} / 100` : '—'}
+                          </td>
+                          <td className="py-3 font-mono text-emerald-700 font-semibold">
+                            {cs.attempts_count > 0 ? `%${cs.pass_rate}` : '—'}
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -619,6 +635,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           {/* Questions Grid List */}
           <div className="grid grid-cols-1 gap-4">
+            {filteredQuestions.length === 0 && (
+              <div className="bg-white border border-slate-200 rounded-xl p-12 text-center text-slate-500">
+                <FileQuestion className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+                <p className="text-sm font-medium text-slate-800">Soru havuzunda henüz soru bulunmuyor.</p>
+                <p className="text-xs text-slate-500 mt-1">"Yeni Soru Ekle" veya "JSON İçe Aktar" butonlarını kullanarak soru ekleyebilirsiniz.</p>
+              </div>
+            )}
             {filteredQuestions.map((q, idx) => {
               const course = courses.find((c) => c.course_id === q.course_id);
 
@@ -738,6 +761,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {exams.length === 0 && (
+              <div className="col-span-full bg-white border border-slate-200 rounded-xl p-12 text-center text-slate-500">
+                <Calendar className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+                <p className="text-sm font-medium text-slate-800">Henüz oluşturulmuş bir sınav bulunmuyor.</p>
+                <p className="text-xs text-slate-500 mt-1">"Yeni Sınav Oluştur" butonuna tıklayarak ilk sınavınızı tanımlayabilirsiniz.</p>
+              </div>
+            )}
             {exams.map((exam) => {
               const course = courses.find((c) => c.course_id === exam.course_id);
               const examAttempts = attempts.filter((a) => a.exam_id === exam.id && a.completed_at);
@@ -874,7 +904,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 ? Math.round(studentAttempts.reduce((s, a) => s + (a.score || 0), 0) / studentAttempts.length)
                 : 0;
 
-            if (!currentStudent) return null;
+            if (!currentStudent) {
+              return (
+                <div className="bg-white border border-slate-200 rounded-xl p-12 text-center text-slate-500">
+                  <Users className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+                  <p className="text-sm font-medium text-slate-800">Kayıtlı öğrenci bulunmuyor.</p>
+                  <p className="text-xs text-slate-500 mt-1">NocoDB LMS sekmesinden öğrencileri senkronize edebilirsiniz.</p>
+                </div>
+              );
+            }
 
             return (
               <div className="space-y-6">
