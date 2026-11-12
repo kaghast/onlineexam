@@ -180,14 +180,14 @@ app.delete('/api/exams/:id', (req: Request, res: Response) => {
 });
 
 // Student Exam Start (Per-student unique question and choice shuffle)
-app.post('/api/exams/:id/start', (req: Request, res: Response) => {
+app.post('/api/exams/:id/start', async (req: Request, res: Response) => {
   try {
     const { student_id } = req.body;
     if (!student_id) {
       res.status(400).json({ success: false, error: 'student_id parametresi zorunludur' });
       return;
     }
-    const result = db.startExamAttempt(req.params.id, student_id);
+    const result = await db.startExamAttempt(req.params.id, student_id);
     res.json({ success: true, ...result });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -228,6 +228,18 @@ app.post('/api/attempts/:id/submit', async (req: Request, res: Response) => {
     const { answers } = req.body;
     const attempt = await db.submitExamAttempt(req.params.id, answers);
     res.json({ success: true, attempt });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(400).json({ success: false, error: msg });
+  }
+});
+
+// Student leaves or exits exam early - automatically grades and marks as completed
+app.post('/api/attempts/:id/exit', async (req: Request, res: Response) => {
+  try {
+    const { answers } = req.body || {};
+    const attempt = await db.submitExamAttempt(req.params.id, answers);
+    res.json({ success: true, attempt, message: 'Sınavdan çıkıldı ve oturum tamamlandı.' });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     res.status(400).json({ success: false, error: msg });

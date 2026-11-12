@@ -35,6 +35,9 @@ COPY --from=builder /app/server.ts ./server.ts
 COPY --from=builder /app/server ./server
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
+# Copy existing database and data to preserve records on build
+COPY --from=builder /app/data ./data
+
 # Persistent volume for SQLite / JSON database storage
 VOLUME /app/data
 

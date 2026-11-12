@@ -173,6 +173,17 @@ export const api = {
     return json.attempt;
   },
 
+  async exitExam(attemptId: string, answers?: Record<string, string>): Promise<StudentExamAttempt> {
+    const res = await fetch(`/api/attempts/${attemptId}/exit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers }),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Sınav çıkışı kaydedilemedi');
+    return json.attempt;
+  },
+
   // Analytics
   async getOverviewAnalytics(): Promise<OverviewAnalytics> {
     const res = await fetch('/api/analytics/overview');

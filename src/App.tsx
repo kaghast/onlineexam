@@ -121,7 +121,8 @@ export default function App() {
 
   // Start exam action: calls backend to create unique per-student shuffle
   const handleStartExam = async (exam: Exam) => {
-    const studentId = currentUser?.student?.id || students[0]?.id;
+    const rawId = currentUser?.student?.id ?? currentUser?.student?.student_no ?? (students[0]?.id ?? students[0]?.student_no);
+    const studentId = rawId !== undefined && rawId !== null ? String(rawId).trim() : '';
     if (!studentId) {
       alert('Sınava girmek için öğrenci girişi yapmalısınız.');
       return;
@@ -202,9 +203,20 @@ export default function App() {
           setViewingResult({ attempt: completed, exam: activeExamSession.exam });
           refreshAllData();
         }}
-        onExit={() => {
-          setActiveExamSession(null);
-          refreshAllData();
+        onExit={async (finalAnswers) => {
+          try {
+            const completed = await api.exitExam(
+              activeExamSession.attempt.id,
+              finalAnswers || activeExamSession.attempt.answers
+            );
+            setActiveExamSession(null);
+            setViewingResult({ attempt: completed, exam: activeExamSession.exam });
+            await refreshAllData();
+          } catch (err) {
+            console.error('Exit exam error:', err);
+            setActiveExamSession(null);
+            refreshAllData();
+          }
         }}
       />
     );

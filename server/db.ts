@@ -136,18 +136,36 @@ class AcademicDatabase {
   }
 
   private loadDatabase(): DatabaseSchema {
+    let rawContent: string | null = null;
     try {
       if (fs.existsSync(DB_FILE)) {
-        const content = fs.readFileSync(DB_FILE, 'utf-8');
-        const parsed = JSON.parse(content);
+        rawContent = fs.readFileSync(DB_FILE, 'utf-8');
+      } else if (fs.existsSync(`${DB_FILE}.bak`)) {
+        rawContent = fs.readFileSync(`${DB_FILE}.bak`, 'utf-8');
+      }
+    } catch (err) {
+      console.error('Error reading database file:', err);
+    }
+
+    if (rawContent) {
+      try {
+        const parsed = JSON.parse(rawContent);
+        const loadedStudents: LmsStudent[] = Array.isArray(parsed.students) ? [...parsed.students] : [...initialStudents];
+        // Ensure default test student (20262025100) is always available
+        for (const s of initialStudents) {
+          if (!loadedStudents.some((item) => item.student_no === s.student_no)) {
+            loadedStudents.push(s);
+          }
+        }
+
         return {
-          courses: parsed.courses || initialCourses,
-          students: parsed.students || initialStudents,
-          courses_students: parsed.courses_students || [],
-          questions: parsed.questions || initialQuestions,
-          exams: parsed.exams || initialExams,
-          attempts: parsed.attempts || initialAttempts,
-          evaluations: parsed.evaluations || initialEvaluations,
+          courses: Array.isArray(parsed.courses) ? parsed.courses : initialCourses,
+          students: loadedStudents,
+          courses_students: Array.isArray(parsed.courses_students) ? parsed.courses_students : [],
+          questions: Array.isArray(parsed.questions) ? parsed.questions : initialQuestions,
+          exams: Array.isArray(parsed.exams) ? parsed.exams : initialExams,
+          attempts: Array.isArray(parsed.attempts) ? parsed.attempts : initialAttempts,
+          evaluations: Array.isArray(parsed.evaluations) ? parsed.evaluations : initialEvaluations,
           nocodb_config: {
             ...initialNocoDBConfig,
             ...(parsed.nocodb_config || {}),
@@ -155,11 +173,11 @@ class AcademicDatabase {
               parsed.nocodb_config?.courses_students_table_id || initialNocoDBConfig.courses_students_table_id,
             api_token: parsed.nocodb_config?.api_token || initialNocoDBConfig.api_token,
           },
-          nocodb_logs: parsed.nocodb_logs || [],
+          nocodb_logs: Array.isArray(parsed.nocodb_logs) ? parsed.nocodb_logs : [],
         };
+      } catch (err) {
+        console.error('Error parsing db.json, initializing fresh store:', err);
       }
-    } catch (err) {
-      console.error('Error loading db.json, initializing fresh store:', err);
     }
 
     const fresh: DatabaseSchema = {
@@ -190,7 +208,20 @@ class AcademicDatabase {
     try {
       this.ensureDataDir();
       const tmpFile = `${DB_FILE}.tmp`;
-      fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2), 'utf-8');
+      const bakFile = `${DB_FILE}.bak`;
+      const jsonStr = JSON.stringify(data, null, 2);
+
+      fs.writeFileSync(tmpFile, jsonStr, 'utf-8');
+
+      // Preserve a backup copy of previous valid db file
+      if (fs.existsSync(DB_FILE)) {
+        try {
+          fs.copyFileSync(DB_FILE, bakFile);
+        } catch {
+          // Ignore copy error
+        }
+      }
+
       fs.renameSync(tmpFile, DB_FILE);
     } catch (err) {
       console.error('Database write error:', err);
@@ -202,10 +233,25 @@ class AcademicDatabase {
     return this.db.courses;
   }
 
-  getCourse(idOrCode: string): LmsCourse | undefined {
-    return this.db.courses.find(
-      (c) => c.id === idOrCode || c.course_id === idOrCode || c.course_code === idOrCode
-    );
+  getCourse(idOrCode: unknown): LmsCourse | undefined {
+    if (idOrCode === null || idOrCode === undefined) return undefined;
+    const raw = String(idOrCode).trim();
+    const target = raw.toLowerCase();
+
+    return this.db.courses.find((c) => {
+      const cId = String(c.id ?? '').trim();
+      const cCourseId = String(c.course_id ?? '').trim();
+      const cCode = String(c.course_code ?? '').trim();
+
+      return (
+        cId === raw ||
+        cCourseId === raw ||
+        cCode === raw ||
+        cId.toLowerCase() === target ||
+        cCourseId.toLowerCase() === target ||
+        cCode.toLowerCase() === target
+      );
+    });
   }
 
   saveCourse(course: LmsCourse): LmsCourse {
@@ -224,21 +270,56 @@ class AcademicDatabase {
     return this.db.students;
   }
 
-  getStudent(idOrNo: string): LmsStudent | undefined {
-    return this.db.students.find(
-      (s) => s.id === idOrNo || s.student_no === idOrNo || s.email.toLowerCase() === idOrNo.toLowerCase()
-    );
+  getStudent(idOrNo: unknown): LmsStudent | undefined {
+    if (idOrNo === null || idOrNo === undefined) return undefined;
+    const raw = String(idOrNo).trim();
+    const target = raw.toLowerCase();
+    const targetTr = raw.toLocaleLowerCase('tr-TR');
+
+    return this.db.students.find((s) => {
+      const sId = String(s.id ?? '').trim();
+      const sNo = String(s.student_no ?? '').trim();
+      const sEmail = String(s.email ?? '').trim();
+
+      return (
+        sId === raw ||
+        sNo === raw ||
+        sId.toLowerCase() === target ||
+        sNo.toLowerCase() === target ||
+        sNo.toLocaleLowerCase('tr-TR') === targetTr ||
+        (sEmail && sEmail.toLowerCase() === target)
+      );
+    });
   }
 
   saveStudent(student: LmsStudent): LmsStudent {
-    const idx = this.db.students.findIndex((s) => s.id === student.id || s.student_no === student.student_no);
+    const sId = String(student.id ?? '').trim();
+    const sNo = String(student.student_no ?? '').trim();
+
+    const normalizedStudent: LmsStudent = {
+      ...student,
+      id: sId || `student_${Date.now()}`,
+      student_no: sNo,
+      name_surname: String(student.name_surname ?? '').trim(),
+      phone: String(student.phone ?? '').trim(),
+      email: String(student.email ?? '').trim(),
+      university: String(student.university ?? '').trim(),
+      department: String(student.department ?? '').trim(),
+    };
+
+    const idx = this.db.students.findIndex(
+      (s) =>
+        (sId && String(s.id).trim() === sId) ||
+        (sNo && String(s.student_no).trim() === sNo)
+    );
+
     if (idx >= 0) {
-      this.db.students[idx] = { ...this.db.students[idx], ...student };
+      this.db.students[idx] = { ...this.db.students[idx], ...normalizedStudent };
     } else {
-      this.db.students.push(student);
+      this.db.students.push(normalizedStudent);
     }
     this.saveDatabase();
-    return student;
+    return normalizedStudent;
   }
 
   // --- COURSE - STUDENT ENROLLMENTS (lms_courses_students - mfqru4rs0jp87fn) ---
@@ -258,29 +339,71 @@ class AcademicDatabase {
     return cs;
   }
 
-  isStudentEnrolledInCourse(student: LmsStudent, courseIdOrCode: string): boolean {
+  isStudentEnrolledInCourse(student: LmsStudent, courseIdOrCode: unknown): boolean {
     const enrollments = this.db.courses_students || [];
     // If no enrollments exist in db yet, allow access so offline/initial mode is functional
     if (enrollments.length === 0) return true;
+    if (!student) return false;
 
     const course = this.getCourse(courseIdOrCode);
     const validCourseIdentifiers = new Set<string>();
-    validCourseIdentifiers.add(courseIdOrCode.trim().toLowerCase());
+    const cRaw = String(courseIdOrCode ?? '').trim();
+    if (cRaw) {
+      validCourseIdentifiers.add(cRaw);
+      validCourseIdentifiers.add(cRaw.toLowerCase());
+      validCourseIdentifiers.add(cRaw.toLocaleLowerCase('tr-TR'));
+    }
     if (course) {
-      if (course.id) validCourseIdentifiers.add(String(course.id).trim().toLowerCase());
-      if (course.course_id) validCourseIdentifiers.add(String(course.course_id).trim().toLowerCase());
-      if (course.course_code) validCourseIdentifiers.add(String(course.course_code).trim().toLowerCase());
+      if (course.id) {
+        const idStr = String(course.id).trim();
+        validCourseIdentifiers.add(idStr);
+        validCourseIdentifiers.add(idStr.toLowerCase());
+      }
+      if (course.course_id) {
+        const cidStr = String(course.course_id).trim();
+        validCourseIdentifiers.add(cidStr);
+        validCourseIdentifiers.add(cidStr.toLowerCase());
+      }
+      if (course.course_code) {
+        const codeStr = String(course.course_code).trim();
+        validCourseIdentifiers.add(codeStr);
+        validCourseIdentifiers.add(codeStr.toLowerCase());
+      }
     }
 
     const validStudentIdentifiers = new Set<string>();
-    if (student.id) validStudentIdentifiers.add(String(student.id).trim().toLowerCase());
-    if (student.student_no) validStudentIdentifiers.add(String(student.student_no).trim().toLowerCase());
-    if (student.email) validStudentIdentifiers.add(String(student.email).trim().toLowerCase());
+    if (student.id !== undefined && student.id !== null) {
+      const sid = String(student.id).trim();
+      validStudentIdentifiers.add(sid);
+      validStudentIdentifiers.add(sid.toLowerCase());
+    }
+    if (student.student_no) {
+      const sno = String(student.student_no).trim();
+      validStudentIdentifiers.add(sno);
+      validStudentIdentifiers.add(sno.toLowerCase());
+      validStudentIdentifiers.add(sno.toLocaleLowerCase('tr-TR'));
+    }
+    if (student.email) {
+      const semail = String(student.email).trim();
+      validStudentIdentifiers.add(semail);
+      validStudentIdentifiers.add(semail.toLowerCase());
+    }
 
     return enrollments.some((enr) => {
-      const enrCourse = String(enr.course_id || '').trim().toLowerCase();
-      const enrStudent = String(enr.student_id || '').trim().toLowerCase();
-      return validCourseIdentifiers.has(enrCourse) && validStudentIdentifiers.has(enrStudent);
+      const enrCourse = String(enr.course_id || '').trim();
+      const enrStudent = String(enr.student_id || '').trim();
+
+      const courseMatch =
+        validCourseIdentifiers.has(enrCourse) ||
+        validCourseIdentifiers.has(enrCourse.toLowerCase()) ||
+        validCourseIdentifiers.has(enrCourse.toLocaleLowerCase('tr-TR'));
+
+      const studentMatch =
+        validStudentIdentifiers.has(enrStudent) ||
+        validStudentIdentifiers.has(enrStudent.toLowerCase()) ||
+        validStudentIdentifiers.has(enrStudent.toLocaleLowerCase('tr-TR'));
+
+      return courseMatch && studentMatch;
     });
   }
 
@@ -485,12 +608,14 @@ class AcademicDatabase {
   }
 
   /**
-   * Start or resume an exam for a student.
+   * Start an exam for a student.
    * Crucial rule: Questions AND choices (options) must be SHUFFLED uniquely per student!
    * Automatically verifies enrollment in lms_courses_students (mfqru4rs0jp87fn).
    * Automatically samples exam.question_count questions with balanced difficulty proportions.
+   * "Sınavı başlatırsa öğrenci sınavdan çıkarsa sınavı tamamlandı say."
+   * If student previously started this exam, it is considered completed and cannot be re-taken.
    */
-  startExamAttempt(examId: string, studentId: string): { attempt: StudentExamAttempt; isNew: boolean } {
+  async startExamAttempt(examId: string, studentId: string): Promise<{ attempt: StudentExamAttempt; isNew: boolean }> {
     const exam = this.getExam(examId);
     if (!exam) throw new Error('Sınav bulunamadı');
 
@@ -515,17 +640,26 @@ class AcademicDatabase {
     }
 
     // Check if legacy manual assigned_student_ids was set
-    if (exam.assigned_student_ids && exam.assigned_student_ids.length > 0 && !exam.assigned_student_ids.includes(student.id)) {
+    if (
+      exam.assigned_student_ids &&
+      exam.assigned_student_ids.length > 0 &&
+      !exam.assigned_student_ids.map((id) => String(id).trim()).includes(String(student.id).trim())
+    ) {
       throw new Error('Bu sınav size atanmamıştır.');
     }
 
-    // Check for existing ongoing or completed attempt
-    const existingAttempt = this.db.attempts.find((a) => a.exam_id === examId && a.student_id === student.id);
+    // Check for existing attempt: if started once and exited, the exam is completed!
+    const existingAttempt = this.db.attempts.find(
+      (a) =>
+        a.exam_id === examId &&
+        (String(a.student_id).trim() === String(student.id).trim() ||
+          (student.student_no && String(a.student_no).trim() === String(student.student_no).trim()))
+    );
     if (existingAttempt) {
-      if (existingAttempt.completed_at) {
-        return { attempt: existingAttempt, isNew: false };
+      if (!existingAttempt.completed_at) {
+        await this.submitExamAttempt(existingAttempt.id);
       }
-      return { attempt: existingAttempt, isNew: false };
+      throw new Error('Bu sınava daha önce başlanmıştır. Sınavdan çıkış yapıldığı için oturumunuz tamamlanmıştır ve tekrar sınava girilemez.');
     }
 
     // Gather question pool
@@ -1134,12 +1268,8 @@ class AcademicDatabase {
     }
 
     // 2. Student login check
-    // Check local database first
-    let student = this.db.students.find(
-      (s) =>
-        String(s.student_no).trim() === trimmedUser ||
-        String(s.email).trim().toLowerCase() === trimmedUser.toLowerCase()
-    );
+    // Check local database first using getStudent (handles student_no, id, email, and Turkish case-insensitivity)
+    let student = this.getStudent(trimmedUser);
 
     // If not found in local db, attempt to lookup in NocoDB in real-time
     if (!student && this.db.nocodb_config.base_url && this.db.nocodb_config.api_token) {

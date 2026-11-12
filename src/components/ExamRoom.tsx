@@ -11,6 +11,7 @@ import {
   Send,
   HelpCircle,
   BookOpen,
+  LogOut,
 } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
@@ -19,7 +20,7 @@ interface ExamRoomProps {
   exam: Exam;
   course?: LmsCourse;
   onFinish: (completedAttempt: StudentExamAttempt) => void;
-  onExit: () => void;
+  onExit: (finalAnswers?: Record<string, string>) => void;
 }
 
 export const ExamRoom: React.FC<ExamRoomProps> = ({
@@ -33,6 +34,7 @@ export const ExamRoom: React.FC<ExamRoomProps> = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flaggedQuestions, setFlaggedQuestions] = useState<Record<string, boolean>>({});
   const [showSubmitModal, setShowSubmitModal] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [secondsRemaining, setSecondsRemaining] = useState<number>(() => {
     const startMs = new Date(attempt.started_at).getTime();
@@ -61,6 +63,53 @@ export const ExamRoom: React.FC<ExamRoomProps> = ({
       setIsSubmitting(false);
     }
   }, [attempt.id, attempt.answers, isSubmitting, onFinish]);
+
+  // Early exit handler: "Sınavı başlatırsa öğrenci sınavdan çıkarsa sınavı tamamlandı say."
+  const handleExitExam = useCallback(async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const completed = await api.exitExam(attempt.id, attempt.answers);
+      setAttempt(completed);
+      setShowExitModal(false);
+      onFinish(completed);
+    } catch (err) {
+      console.error('Exit exam error:', err);
+      onExit(attempt.answers);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [attempt.id, attempt.answers, isSubmitting, onFinish, onExit]);
+
+  // Window close / tab navigate away listener (marks exam completed upon exit)
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = 'Sınavdan çıkarsanız sınavınız tamamlandı sayılacaktır.';
+      return e.returnValue;
+    };
+
+    const handlePageHide = () => {
+      try {
+        fetch(`/api/attempts/${attempt.id}/exit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers: attempt.answers }),
+          keepalive: true,
+        });
+      } catch (err) {
+        console.error('Pagehide exit request error:', err);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageHide);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageHide);
+    };
+  }, [attempt.id, attempt.answers]);
 
   // Countdown timer
   useEffect(() => {
